@@ -1,19 +1,19 @@
 <template>
-<div>
-    <div id="map" class="map">
+    <div>
+        <div id="map" class="map">
+        </div>
+        <div class="form-check" v-for="layer in layers" :key="layer.id">
+            <label class="form-check-label">
+                <input
+                    class="form-check-input"
+                    type="checkbox"
+                    v-model="layer.active"
+                    @change="layerChanged(layer.id, layer.active)"
+                />
+                {{ layer.name }}
+            </label>
+        </div>
     </div>
-    <div class="form-check" v-for="layer in layers" :key="layer.id">
-        <label class="form-check-label">
-            <input
-                class="form-check-input"
-                type="checkbox"
-                v-model="layer.active"
-                @change="layerChanged(layer.id, layer.active)"
-            />
-            {{ layer.name }}
-        </label>
-    </div>
-</div>
 </template>
 
 <script>
@@ -85,49 +85,49 @@ export default {
             id: 1,
             name: 'City/County Boundaries',
             active: false,
-            features: [{
-            id: 0,
-            name: 'City of St. Louis',
-            type: 'polygon',
-            coords: [
-            [38.770547, -90.168056],
-            [38.753816, -90.177326],
-            [38.747390, -90.183849],
-            [38.731456, -90.206337],
-            [38.719805, -90.212002],
-            [38.706142, -90.210629],
-            [38.692879, -90.202217],
-            [38.680150, -90.189857],
-            [38.665139, -90.182991],
-            [38.646774, -90.179729],
-            [38.630818, -90.179214],
-            [38.615663, -90.183849],
-            [38.601713, -90.190201],
-            [38.587759, -90.204620],
-            [38.577427, -90.219212],
-            [38.564140, -90.232258],
-            [38.545615, -90.248566],
-            [38.531650, -90.257664],
-            [38.538901, -90.270023],
-            [38.548702, -90.273113],
-            [38.561053, -90.294399],
-            [38.574072, -90.309334],
-            [38.596346, -90.320320],
-            [38.614054, -90.314827],
-            [38.632159, -90.304527],
-            [38.651198, -90.302296],
-            [38.664067, -90.293713],
-            [38.683768, -90.278263],
-            [38.700650, -90.265388],
-            [38.717662, -90.253887],
-            [38.722349, -90.238266],
-            [38.729715, -90.221272],
-            [38.742302, -90.203934],
-            [38.754886, -90.191746],
-            [38.764792, -90.184021],
-            [38.771350, -90.183334],
-            ],
-            },{
+                features: [{
+                id: 0,
+                name: 'City of St. Louis',
+                type: 'polygon',
+                coords: [
+                [38.770547, -90.168056],
+                [38.753816, -90.177326],
+                [38.747390, -90.183849],
+                [38.731456, -90.206337],
+                [38.719805, -90.212002],
+                [38.706142, -90.210629],
+                [38.692879, -90.202217],
+                [38.680150, -90.189857],
+                [38.665139, -90.182991],
+                [38.646774, -90.179729],
+                [38.630818, -90.179214],
+                [38.615663, -90.183849],
+                [38.601713, -90.190201],
+                [38.587759, -90.204620],
+                [38.577427, -90.219212],
+                [38.564140, -90.232258],
+                [38.545615, -90.248566],
+                [38.531650, -90.257664],
+                [38.538901, -90.270023],
+                [38.548702, -90.273113],
+                [38.561053, -90.294399],
+                [38.574072, -90.309334],
+                [38.596346, -90.320320],
+                [38.614054, -90.314827],
+                [38.632159, -90.304527],
+                [38.651198, -90.302296],
+                [38.664067, -90.293713],
+                [38.683768, -90.278263],
+                [38.700650, -90.265388],
+                [38.717662, -90.253887],
+                [38.722349, -90.238266],
+                [38.729715, -90.221272],
+                [38.742302, -90.203934],
+                [38.754886, -90.191746],
+                [38.764792, -90.184021],
+                [38.771350, -90.183334],
+                ],
+                },{
                 id: 1,
                 name: 'St. Louis County',
                 type: 'polygon',
@@ -257,13 +257,11 @@ export default {
                 const polygonFeatures = layer.features.filter(feature => feature.type === 'polygon');
 
                 markerFeatures.forEach((feature) => {
-                    feature.leafletObject = L.marker(feature.coords)
-                    .bindPopup(feature.name);
+                    feature.leafletObject = L.marker(feature.coords).bindPopup(feature.name + ' ' + feature.id);
                 });
 
                 polygonFeatures.forEach((feature) => {
-                    feature.leafletObject = L.polygon(feature.coords)
-                    .bindPopup(feature.name);
+                    feature.leafletObject = L.polygon(feature.coords).bindPopup(feature.name);
                 });
             });
         },
