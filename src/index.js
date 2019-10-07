@@ -6,7 +6,7 @@ let jsontest = require('../src/studentx.json')
 
 function generateRandomLat() {
     var arr = [];
-    for(let i = 0; i<=9; i++) {
+    for(let i = 0; i<=299; i++) {
         // var arr = [];
         arr.push([])
         arr[i].push(Math.random().toFixed(6) * (+14 - +13) + +13, Math.random().toFixed(6) * (+100.6 - +100) + +100)
@@ -46,7 +46,7 @@ var allOrder = {
 
 let data = JSON.stringify(allOrder, null, 2);
 
-fs.writeFile('studentx.json', data, (err) => {
+fs.writeFile('orders.json', data, (err) => {
     if (err) throw err;
     console.log('Data written to file');
 });
