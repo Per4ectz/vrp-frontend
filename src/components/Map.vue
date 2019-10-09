@@ -17,12 +17,13 @@
 
 <script>
 
-import orders from "../index.js"
-
+import orders from "../orders.json"
+import axios from 'axios'
 
 export default {
     data () {
         return {
+            address: null,
             map: null,
             tileLayer: null,
             layers: [{
@@ -106,16 +107,13 @@ export default {
     mounted() {
         this.initMap();
         this.initLayers();
-        
-        axios.put('/', {
-            orders
-        })
-        .then((response) => {
-            console.log(response);
-        })
-        .catch((error) => {
-            console.log(error);
-        });
+        // this.reverserCoor();
+        this.postData();
+    },
+    watch : {
+         address(val) {
+            console.log('valval',val)
+        }
     },
     methods: {
         initMap() {
@@ -151,6 +149,27 @@ export default {
                 } else {
                 feature.leafletObject.removeFrom(this.map);
                 }
+            });
+        },
+        reverserCoor() {
+            L.esri.Geocoding.reverseGeocode()
+            .latlng([48.8583, 2.2945])
+            .run(function (error, result, response) {
+                // callback is called with error, result, and raw response
+                // result.latlng contains the coordinates of the located address
+                this.address = result.address
+                // result.address contains information about the match
+            });
+        },
+        postData() {
+            axios.post('http://localhost:8080/', {
+                orders
+            })
+            .then((response) => {
+                console.log(orders);
+            })
+            .catch((error) => {
+                console.log(error);
             });
         }
     },

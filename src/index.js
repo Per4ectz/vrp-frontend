@@ -2,11 +2,11 @@ var express = require("express");
 var app = express();
 var fs = require('fs');
 
-let jsontest = require('../src/studentx.json')
+let jsontest = require('../src/orders.json')
 
 function generateRandomLat() {
     var arr = [];
-    for(let i = 0; i<=299; i++) {
+    for(let i = 0; i<=9; i++) {
         // var arr = [];
         arr.push([])
         arr[i].push(Math.random().toFixed(6) * (+14 - +13) + +13, Math.random().toFixed(6) * (+100.6 - +100) + +100)
@@ -54,6 +54,7 @@ fs.writeFile('orders.json', data, (err) => {
 app.get("/url", (req, res, next) => {
     res.json(jsontest);
    });
+
 
 
 app.listen(3000, () => {
