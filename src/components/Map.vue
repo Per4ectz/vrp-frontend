@@ -125,7 +125,7 @@ export default {
                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>',
             }
             );
-            this.tileLayer.addTo(this.map);
+            this.tileLayer.addTo(this.map); 
         },
         initLayers() {
             this.layers.forEach((layer) => {
@@ -162,7 +162,7 @@ export default {
             });
         },
         postData() {
-            axios.put('http://localhost:8080/api/order', {
+            axios.post('http://localhost:8080/', {
                 orders
             })
             .then((response) => {
