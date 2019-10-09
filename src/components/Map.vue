@@ -17,8 +17,7 @@
 
 <script>
 
-import orders from "../index.js"
-
+import orders from "../studentx.json"
 
 export default {
     data () {
@@ -107,7 +106,7 @@ export default {
         this.initMap();
         this.initLayers();
         
-        axios.put('/', {
+        axios.put('http://localhost:8080/api/order', {
             orders
         })
         .then((response) => {
