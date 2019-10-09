@@ -2,7 +2,7 @@ var express = require("express");
 var app = express();
 var fs = require('fs');
 
-let jsontest = require('../src/studentx.json')
+// let jsontest = require('./orders.json')
 
 function generateRandomLat() {
     var arr = [];
@@ -46,7 +46,7 @@ var allOrder = {
 
 let data = JSON.stringify(allOrder, null, 2);
 
-fs.writeFile('studentx.json', data, (err) => {
+fs.writeFile('orders.json', data, (err) => {
     if (err) throw err;
     console.log('Data written to file');
 });
@@ -54,6 +54,7 @@ fs.writeFile('studentx.json', data, (err) => {
 app.get("/url", (req, res, next) => {
     res.json(jsontest);
    });
+
 
 
 app.listen(3000, () => {
