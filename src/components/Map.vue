@@ -1,7 +1,7 @@
 <template>
     <div>
         <div id="map" class="map"></div><br>
-        <div class="form-check" v-for="layer in layers" :key="layer.id">
+        <!-- <div class="form-check" v-for="layer in layers" :key="layer.id">
             <label class="form-check-label">
                 <input
                     class="form-check-input"
@@ -11,7 +11,7 @@
                 />
                 {{ layer.name }}
             </label>
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -29,7 +29,7 @@ export default {
             layers: [{
                 id: 0,
                 name: 'Restaurants',
-                active: false,
+                active: true,
                 features: [{
                     id: 0,
                     name: 'Bogart\'s Smokehouse',
@@ -88,7 +88,7 @@ export default {
             {
             id: 1,
             name: 'City/County Boundaries',
-            active: false,
+            active: true,
                 features: [{
                 id: 0,
                 name: 'City of St. Louis',
@@ -162,11 +162,11 @@ export default {
             });
         },
         postData() {
-            axios.post('http://localhost:8080/', {
+            axios.put('http://localhost:8080/api/order', {
                 orders
             })
             .then((response) => {
-                console.log(orders);
+                console.log('Post Data',orders);
             })
             .catch((error) => {
                 console.log(error);

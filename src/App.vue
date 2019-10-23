@@ -1,19 +1,19 @@
 <template>
   <div id="app">
     <!-- <google-map /> -->
-    <Map />
+    <MapT />
   </div>
 </template>
 
 <script>
 // import GoogleMap from "./components/GoogleMap";
-import Map from "./components/Map";
+import MapT from "./components/MapT";
 
 
 export default {
   name: 'app',
   components: {
-    Map
+    MapT
   }
 }
 </script>

@@ -2,10 +2,15 @@ import Vue from 'vue'
 import App from './App.vue'
 import * as VueGoogleMaps from "vue2-google-maps";
 import * as L from 'vue2-leaflet'
+import BootstrapVue from 'bootstrap-vue'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+
 // import axios from 'axios'
 
 Vue.config.productionTip = false
 
+Vue.use(BootstrapVue)
 Vue.use(L)
 // Vue.use(axios)
 
