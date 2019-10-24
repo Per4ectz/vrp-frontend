@@ -29,7 +29,7 @@ x.forEach((c) => {
 })
 var allOrder = {
     solution: "kmean",
-    numberOfCars: 3,
+    numberOfCars: "20",
     orders: orders
 }
 
