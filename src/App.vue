@@ -1,19 +1,19 @@
 <template>
   <div id="app">
     <!-- <google-map /> -->
-    <Map />
+    <MapT />
   </div>
 </template>
 
 <script>
 // import GoogleMap from "./components/GoogleMap";
-import Map from "./components/Map";
+import MapT from "./components/MapT";
 
 
 export default {
   name: 'app',
   components: {
-    Map
+    MapT
   }
 }
 </script>
@@ -25,6 +25,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 30px;
 }
 </style>

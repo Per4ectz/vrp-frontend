@@ -16,19 +16,6 @@ function generateRandomLat() {
 
 var x = generateRandomLat()
 
-// console.log(x[0])
-
-// var myData = [];
-// rows.each(function (index) {
-//     var obj = { 
-//         id: $this.find('.elementOne').val(),
-//         name: $this.find('.elementTwo').text(),
-//         type: 'marker',
-//         coords: x[0]
-//     };
-//     myData.push(obj);
-// });
-
 var orders = [];
 x.forEach((c) => {
     console.log(c)
@@ -41,7 +28,9 @@ x.forEach((c) => {
     orders.push(s)    
 })
 var allOrder = {
-    data: orders
+    solution: "kmean",
+    numberOfCars: "20",
+    orders: orders
 }
 
 let data = JSON.stringify(allOrder, null, 2);
