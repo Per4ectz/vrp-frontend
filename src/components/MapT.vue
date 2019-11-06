@@ -2,12 +2,17 @@
 <div>
     <h1 style="margin-bottom: 30px">Vehicle Routing Problem</h1>
 
-    <!-- <div id="uploadField" style="display: inline-block; margin-right: 20px">
+    <div id="orderAmount" style="display: inline-block; margin-right: 20px">
+        <label style="display: block; text-align: left">Order Amount</label>
+        <b-form-input v-model="orderAmount" placeholder="Order Amount" style="width: 150px"></b-form-input>
+    </div>
+
+    <div id="uploadField" style="display: inline-block; margin-right: 20px">
         <label style="display: block; text-align: left">Upload Order</label>
         <b-form-file id="uploadBtn" accept=".json" v-model="file" 
         :state="Boolean(file)" placeholder="Choose a file" drop-placeholder="Drop file here..." 
         style="text-align: left; width: 250px"></b-form-file>
-    </div> -->
+    </div>
     
     <div id="carNumField" style="display: inline-block; margin-right: 20px">
         <label style="display: block; text-align: left">Car number</label>
@@ -28,7 +33,7 @@
 </template>
 
 <script>
-import orders from "../orders.json"
+// import orders from "../orders.json"
 import axios from 'axios'
 
 
@@ -36,7 +41,10 @@ export default {
     data() {
         return {
             file: null,
+            fileData: null,
             carNum: '',
+            orderAmount: '',
+            orderArray: null,
             map: null,
             tileLayer: null,
             marker: null,
@@ -50,7 +58,7 @@ export default {
             myIcon : L.divIcon({
                 className: 'my-div-icon',
                 iconSize: [30, 30]}),
-            mycolor: '#000000'
+            colour: []
             }
              
     },
@@ -61,22 +69,12 @@ export default {
         
     },
     watch: {
-        // file(val){
-        //     // const fileValue = new FileReader();
-        //     // fileValue.onload = e => console.log(e.target.result);
-        //     // var orderVal = fileValue.readAsText(val);
-        //     this.readOrder()
-        //     console.log(val)
-        // },
-        carNum(val) {
-            console.log('Input Car Num', val)
+        file(val) {
+            this.readOrder()
+            console.log(val)
         },
-        selected(val) {
-            console.log('Input Solution', val)
-        },
-        order(val) {
-            this.loopMarker()
-            // console.log('Order', val)
+        colour(val) {
+            console.log(val)
         }
     },
     methods: {
@@ -103,43 +101,36 @@ export default {
                 [13.599460, 100.596947],
                 [13.547140, 100.274338]]).addTo(this.map)
         },
-        readOrder() {
-            var file = event.target.files[0];
-            var reader = new FileReader();
-            reader.onload =  (e) => e.target.result;
-            var ad = reader.readAsText(file);
-            console.log(ad)
+        async readOrder() {
 
-            // const fileValue = new FileReader();
-            // fileValue.onload = e => console.log(e.target.result);
-            // var orderVal = fileValue.readAsText(this.file);
-            // console.log(orderVal)
-        },
-        loopMarker() {
-            console.log(this.order)
+            const fileValue = new FileReader();
+            fileValue.onload = (e) => {
+                // this.fileData =  e.target.result
+                // console.log('File read : ',e.target.result)
+            }
+            fileValue.readAsText(this.file);
+            this.fileData = fileValue
+            console.log('teste : ',this.fileData.result)
+
         },
         putData() {
-            // var orders = {
-            //     solution: this.selected,
-            //     numberOfCars: this.carNum,
-            //     orders: "Hello"
-            // }
-            // console.log(orders)
+            this.genOrder()
+
+            var orders = {
+                solution: this.selected,
+                numberOfCars: this.carNum,
+                orders: this.orderArray
+            }
+            console.log(orders)
+
             axios.put('http://localhost:8080/api/order', {
                 orders
             })
             .then((response) => {
-                // response.data.forEach((e) => {
-                //     if(e.carNumber === 0) {
-                //         var carNum0 = []
-                //         carNum0.push[e]
-                //         console.log(carNum0)
-                //     }
-                    
-                // })
-                // var co = [];
                 response.data.forEach((e) => {
-                    this.setRandomColor()
+                    this.getRandomColor()
+                    // console.log(this.color)
+                    
                     this.marker = L.marker(e.coordinates, {icon: this.myIcon}).addTo(this.map)
                     console.log(e.carNumber)
                 })
@@ -160,16 +151,39 @@ export default {
             for (var i = 0; i < 6; i++) {
                 color += letters[Math.floor(Math.random() * 16)];
             }
-            return color;
+            this.colour.push(color) 
+            // return color;
         },
         setRandomColor() {
-            this.myIcon.scss("background", this.getRandomColor());
+            // $(mycolor).scss("background", this.getRandomColor());
+        },
+        genOrder() {
+            var arr = [];
+            for(let i = 0; i<this.orderAmount; i++) {
+                arr.push([])
+                arr[i].push(Math.random().toFixed(6) * (+14.0 - +13.5) + +13.5, Math.random().toFixed(6) * (+100.6 - +100.0) + +100.0)
+            }
+
+            var orders = [];
+            arr.forEach((c) => {
+                // console.log(c)
+                var s = {
+                    coordinates : c, width: 100,
+                    length: 100,
+                    height: 100,
+                    weight: 10 ,
+                }
+                orders.push(s)
+                this.orderArray = orders
+            })
         }
+
     }
 }
 </script>
 
 <style lang="scss">
+$mycolor: black;
 #map { 
     height: 700px;
     width: 1880px;

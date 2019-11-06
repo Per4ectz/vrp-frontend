@@ -9,7 +9,7 @@ function generateRandomLat() {
     for(let i = 0; i<=299; i++) {
         // var arr = [];
         arr.push([])
-        arr[i].push(Math.random().toFixed(6) * (+14 - +13) + +13, Math.random().toFixed(6) * (+100.6 - +100) + +100)
+        arr[i].push(Math.random().toFixed(6) * (+14.0 - +13.5) + +13.5, Math.random().toFixed(6) * (+100.6 - +100.0) + +100.0)
     }
     return arr;
 }
