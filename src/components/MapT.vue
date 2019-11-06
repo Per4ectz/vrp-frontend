@@ -4,14 +4,16 @@
 
     <div id="orderAmount" style="display: inline-block; margin-right: 20px">
         <label style="display: block; text-align: left">Order Amount</label>
-        <b-form-input v-model="orderAmount" placeholder="Order Amount" style="width: 150px"></b-form-input>
+        <b-form-input v-model="orderAmount" placeholder="Order Amount" style="width: 150px" v-bind:disabled="file != null"></b-form-input>
     </div>
+
+    <span style="margin-right: 20px">or</span>
 
     <div id="uploadField" style="display: inline-block; margin-right: 20px">
         <label style="display: block; text-align: left">Upload Order</label>
         <b-form-file id="uploadBtn" accept=".json" v-model="file" 
         :state="Boolean(file)" placeholder="Choose a file" drop-placeholder="Drop file here..." 
-        style="text-align: left; width: 250px"></b-form-file>
+        style="text-align: left; width: 250px" v-bind:disabled="orderAmount != ''"></b-form-file>
     </div>
     
     <div id="carNumField" style="display: inline-block; margin-right: 20px">
@@ -33,7 +35,6 @@
 </template>
 
 <script>
-// import orders from "../orders.json"
 import axios from 'axios'
 
 
@@ -75,7 +76,8 @@ export default {
         },
         colour(val) {
             console.log(val)
-        }
+        },
+
     },
     methods: {
         initMap() {
@@ -177,7 +179,6 @@ export default {
                 this.orderArray = orders
             })
         }
-
     }
 }
 </script>
@@ -195,13 +196,14 @@ $mycolor: black;
     margin-top: 20px;
 }
 .my-div-icon {
-    background: blue;
-    border: 2px solid #FFFFFF;
-    width: 3rem;
-    height: 3rem;
+
+    background:blue;
+    border:3px solid rgba(19, 28, 160, 0.5);
     left: -1.5rem;
     top: -1.5rem;
-    border-radius: 3rem 3rem 0;
-    // transform: rotate(45deg);
+    position: absolute;
+    border-radius: 1rem 1rem 0;
+    display: inline-block;
+    // transform: rotate(270deg);
 }
 </style>
