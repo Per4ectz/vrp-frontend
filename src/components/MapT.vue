@@ -59,7 +59,11 @@ export default {
             myIcon : L.divIcon({
                 className: 'my-div-icon',
                 iconSize: [30, 30]}),
-            colour: []
+            myIcon2 : L.divIcon({
+                className: 'marker-icon',
+                iconSize: [30, 30]}),
+            colour: [],
+            colorZ: null
             }
              
     },
@@ -95,6 +99,7 @@ export default {
             
            this.marker = L.marker([13.753960, 100.502243], {icon: this.myIcon}).addTo(this.map)
            
+           
         },
         initPolygon() {
             this.polygon = L.polygon([[13.813118, 100.041182],
@@ -129,11 +134,29 @@ export default {
                 orders
             })
             .then((response) => {
+                for(var c = 0; c < this.carNum;c++) this.getRandomColor()
                 response.data.forEach((e) => {
-                    this.getRandomColor()
-                    // console.log(this.color)
-                    
-                    this.marker = L.marker(e.coordinates, {icon: this.myIcon}).addTo(this.map)
+                
+                const myCustomColour = this.colour[e.carNumber]
+                const markerHtmlStyles = `
+                background-color: ${myCustomColour};
+                width: 3rem;
+                height: 3rem;
+                display: block;
+                left: -1.5rem;
+                top: -1.5rem;
+                position: relative;
+                border-radius: 3rem 3rem 0;
+                transform: rotate(45deg);
+                border: 1px solid #FFFFFF`
+
+                const iconx = L.divIcon({
+                className: "my-custom-pin",
+                iconSize: [30, 30],
+                html: `<span style="${markerHtmlStyles}" />`
+                })
+
+                this.marker = L.marker(e.coordinates, {icon: iconx}).addTo(this.map)
                     console.log(e.carNumber)
                 })
                 // console.log(co);
@@ -154,11 +177,10 @@ export default {
                 color += letters[Math.floor(Math.random() * 16)];
             }
             this.colour.push(color) 
-            // return color;
         },
-        setRandomColor() {
-            // $(mycolor).scss("background", this.getRandomColor());
-        },
+        // setRandomColor() {
+        //     $(mycolor).scss("background", colour);
+        // },
         genOrder() {
             var arr = [];
             for(let i = 0; i<this.orderAmount; i++) {
@@ -184,7 +206,7 @@ export default {
 </script>
 
 <style lang="scss">
-$mycolor: black;
+
 #map { 
     height: 700px;
     width: 1880px;
@@ -197,8 +219,32 @@ $mycolor: black;
 }
 .my-div-icon {
 
-    background:blue;
+    background: blue;
     border:3px solid rgba(19, 28, 160, 0.5);
+    left: -1.5rem;
+    top: -1.5rem;
+    position: absolute;
+    border-radius: 1rem 1rem 0;
+    display: inline-block;
+    // transform: rotate(270deg);
+}
+
+.marker-icon-red {
+
+    background: red;
+    border:3px solid rgba(255, 255, 255, 0.5);
+    left: -1.5rem;
+    top: -1.5rem;
+    position: absolute;
+    border-radius: 1rem 1rem 0;
+    display: inline-block;
+    // transform: rotate(270deg);
+}
+
+.marker-icon-blue {
+
+    background: blue;
+    border:3px solid rgba(255, 255, 255, 0.5);
     left: -1.5rem;
     top: -1.5rem;
     position: absolute;

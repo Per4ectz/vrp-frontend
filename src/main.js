@@ -24,7 +24,6 @@ Vue.use(VueGoogleMaps, {
     libraries: "places" // necessary for places input
   }
 });
-
 new Vue({
   render: h => h(App),
 }).$mount('#app')
