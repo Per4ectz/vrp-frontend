@@ -4,7 +4,7 @@
 
     <div id="orderAmount" style="display: inline-block; margin-right: 20px">
         <label style="display: block; text-align: left">Order Amount</label>
-        <b-form-input v-model="orderAmount" placeholder="Order Amount" style="width: 150px" v-bind:disabled="file != null"></b-form-input>
+        <b-form-input v-model="orderAmount" placeholder="Number of orders" style="width: 150px" v-bind:disabled="file != null"></b-form-input>
     </div>
 
     <span style="margin-right: 20px">or</span>
@@ -17,8 +17,8 @@
     </div>
     
     <div id="carNumField" style="display: inline-block; margin-right: 20px">
-        <label style="display: block; text-align: left">Car number</label>
-        <b-form-input v-model="carNum" placeholder="Car number" style="width: 150px"></b-form-input>
+        <label style="display: block; text-align: left">Car Amount</label>
+        <b-form-input v-model="carNum" placeholder="Number of cars" style="width: 150px"></b-form-input>
     </div>
 
     <div id="solutionSelect" style="display: inline-block; margin-right: 20px">
@@ -59,9 +59,6 @@ export default {
             myIcon : L.divIcon({
                 className: 'my-div-icon',
                 iconSize: [30, 30]}),
-            myIcon2 : L.divIcon({
-                className: 'marker-icon',
-                iconSize: [30, 30]}),
             colour: [],
             colorZ: null
             }
@@ -96,8 +93,28 @@ export default {
             this.tileLayer.addTo(this.map); 
         },
         initMarker() {
-            
-           this.marker = L.marker([13.753960, 100.502243], {icon: this.myIcon}).addTo(this.map)
+            // this.marker = L.marker([13.753960, 100.502243], {icon: this.myIcon}).addTo(this.map)
+            const markerStyles = `
+            background-color: white;
+            width: 2rem;
+            height: 2rem;
+            display: inline-block;
+            left: -1.5rem;
+            top: -1.5rem;
+            position: absolute;
+            border-radius: 3rem 3rem 0;
+            transform: rotate(45deg);
+            border:3px solid rgba(19, 28, 160, 0.5);`
+
+            const iconz = L.divIcon({
+            className: "my-custom-pin",
+            iconAnchor: [0, 24],
+            labelAnchor: [-6, 0],
+            popupAnchor: [0, -36],
+            html: `<span style="${markerStyles}" />`
+            })
+
+                this.marker = L.marker([13.753960, 100.502243], {icon: iconz}).addTo(this.map)
            
            
         },
@@ -130,7 +147,7 @@ export default {
             }
             console.log(orders)
 
-            axios.put('http://localhost:8080/api/order', {
+            axios.put('http://161.246.35.125:8080/api/order', {
                 orders
             })
             .then((response) => {
@@ -140,15 +157,15 @@ export default {
                 const myCustomColour = this.colour[e.carNumber]
                 const markerHtmlStyles = `
                 background-color: ${myCustomColour};
-                width: 3rem;
-                height: 3rem;
-                display: block;
+                width: 2rem;
+                height: 2rem;
+                display: inline-block;
                 left: -1.5rem;
                 top: -1.5rem;
-                position: relative;
+                position: absolute;
                 border-radius: 3rem 3rem 0;
                 transform: rotate(45deg);
-                border: 1px solid #FFFFFF`
+                border:3px solid rgba(0, 0, 0, 0.5);`
 
                 const iconx = L.divIcon({
                 className: "my-custom-pin",
@@ -156,15 +173,10 @@ export default {
                 html: `<span style="${markerHtmlStyles}" />`
                 })
 
-                this.marker = L.marker(e.coordinates, {icon: iconx}).addTo(this.map)
+                this.marker = L.marker(e.coordinates, {icon: iconx}).addTo(this.map);
+                // this.marker.bindPopup(this.colour).openPopup();
                     console.log(e.carNumber)
                 })
-                // console.log(co);
-                // console.log(response.data[0])
-                // console.log(response.data[1])
-                // this.order = response.data
-
-
             })
             .catch((error) => {
                 console.log(error);
@@ -178,9 +190,6 @@ export default {
             }
             this.colour.push(color) 
         },
-        // setRandomColor() {
-        //     $(mycolor).scss("background", colour);
-        // },
         genOrder() {
             var arr = [];
             for(let i = 0; i<this.orderAmount; i++) {
@@ -190,7 +199,6 @@ export default {
 
             var orders = [];
             arr.forEach((c) => {
-                // console.log(c)
                 var s = {
                     coordinates : c, width: 100,
                     length: 100,
@@ -217,17 +225,17 @@ export default {
 #btn {
     margin-top: 20px;
 }
-.my-div-icon {
+// .my-div-icon {
 
-    background: blue;
-    border:3px solid rgba(19, 28, 160, 0.5);
-    left: -1.5rem;
-    top: -1.5rem;
-    position: absolute;
-    border-radius: 1rem 1rem 0;
-    display: inline-block;
-    // transform: rotate(270deg);
-}
+//     background: blue;
+//     border:3px solid rgba(0, 0, 0, 0.5);
+//     left: -1.5rem;
+//     top: -1.5rem;
+//     position: absolute;
+//     border-radius: 1rem 1rem 0;
+//     display: inline-block;
+//     transform: rotate(45deg);
+// }
 
 .marker-icon-red {
 
@@ -241,15 +249,5 @@ export default {
     // transform: rotate(270deg);
 }
 
-.marker-icon-blue {
 
-    background: blue;
-    border:3px solid rgba(255, 255, 255, 0.5);
-    left: -1.5rem;
-    top: -1.5rem;
-    position: absolute;
-    border-radius: 1rem 1rem 0;
-    display: inline-block;
-    // transform: rotate(270deg);
-}
 </style>
