@@ -1,33 +1,34 @@
 <template>
 <div>
-    <h1 style="margin-bottom: 30px">Vehicle Routing Problem</h1>
+    <!-- <h1 style="margin-bottom: 30px">Vehicle Routing Problem</h1> -->
+    <div id="orderGen">
+        <div id="orderAmount" style="display: inline-block; margin-right: 20px">
+            <label style="display: block; text-align: left">Order Amount</label>
+            <b-form-input v-model="orderAmount" placeholder="Number of orders" style="width: 150px" v-bind:disabled="file != null"></b-form-input>
+        </div>
 
-    <div id="orderAmount" style="display: inline-block; margin-right: 20px">
-        <label style="display: block; text-align: left">Order Amount</label>
-        <b-form-input v-model="orderAmount" placeholder="Number of orders" style="width: 150px" v-bind:disabled="file != null"></b-form-input>
+        <span style="margin-right: 20px">or</span>
+
+        <div id="uploadField" style="display: inline-block; margin-right: 20px">
+            <label style="display: block; text-align: left">Upload Order</label>
+            <b-form-file id="uploadBtn" accept=".json" v-model="file" 
+            :state="Boolean(file)" placeholder="Choose a file" drop-placeholder="Drop file here..." 
+            style="text-align: left; width: 250px" v-bind:disabled="orderAmount != ''"></b-form-file>
+        </div>
+        
+        <div id="carNumField" style="display: inline-block; margin-right: 20px">
+            <label style="display: block; text-align: left">Car Amount</label>
+            <b-form-input v-model="carNum" placeholder="Number of cars" style="width: 150px"></b-form-input>
+        </div>
+
+        <div id="solutionSelect" style="display: inline-block; margin-right: 20px">
+            <label style="display: block; text-align: left">Solution</label>
+            <b-form-select v-model="selected" :options="options"></b-form-select>
+        </div>
+        <b-button variant="primary" style="width: 200px" @click="putData()">Submit</b-button>
     </div>
-
-    <span style="margin-right: 20px">or</span>
-
-    <div id="uploadField" style="display: inline-block; margin-right: 20px">
-        <label style="display: block; text-align: left">Upload Order</label>
-        <b-form-file id="uploadBtn" accept=".json" v-model="file" 
-        :state="Boolean(file)" placeholder="Choose a file" drop-placeholder="Drop file here..." 
-        style="text-align: left; width: 250px" v-bind:disabled="orderAmount != ''"></b-form-file>
-    </div>
-    
-    <div id="carNumField" style="display: inline-block; margin-right: 20px">
-        <label style="display: block; text-align: left">Car Amount</label>
-        <b-form-input v-model="carNum" placeholder="Number of cars" style="width: 150px"></b-form-input>
-    </div>
-
-    <div id="solutionSelect" style="display: inline-block; margin-right: 20px">
-        <label style="display: block; text-align: left">Solution</label>
-        <b-form-select v-model="selected" :options="options"></b-form-select>
-    </div>
-    <b-button variant="primary" style="width: 200px" @click="putData()">Submit</b-button>
-
     <div id="map" class="map"></div> 
+    
     
     <!-- <b-button id="btn" variant="primary" @click="putData()">Put API</b-button> -->
     
@@ -67,7 +68,7 @@ export default {
     mounted() {
         this.initMap()
         this.initMarker()
-        this.initPolygon()
+        // this.initPolygon()
         
     },
     watch: {
@@ -104,7 +105,7 @@ export default {
             position: absolute;
             border-radius: 3rem 3rem 0;
             transform: rotate(45deg);
-            border:3px solid rgba(19, 28, 160, 0.5);`
+            border:10px solid rgba(0, 0, 0, 0.8);`
 
             const iconz = L.divIcon({
             className: "my-custom-pin",
@@ -114,7 +115,8 @@ export default {
             html: `<span style="${markerStyles}" />`
             })
 
-                this.marker = L.marker([13.753960, 100.502243], {icon: iconz}).addTo(this.map)
+                this.marker = L.marker([13.753960, 100.502243], {icon: iconz}).addTo(this.map).bindPopup("Root Marker");
+
            
            
         },
@@ -147,7 +149,7 @@ export default {
             }
             console.log(orders)
 
-            axios.put('http://161.246.35.125:8080/api/order', {
+            axios.put('http://localhost:8080/api/order', {
                 orders
             })
             .then((response) => {
@@ -174,7 +176,6 @@ export default {
                 })
 
                 this.marker = L.marker(e.coordinates, {icon: iconx}).addTo(this.map);
-                // this.marker.bindPopup(this.colour).openPopup();
                     console.log(e.carNumber)
                 })
             })
@@ -214,40 +215,29 @@ export default {
 </script>
 
 <style lang="scss">
-
+#orderGen {
+    background: white;
+    margin-top: 10px;
+    padding: 10px;
+    position: absolute;
+    left: 10px;
+    top: 0px;
+    z-index: 1;
+    width: 60%;
+    height: 100px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 14px 1px rgba(0,0,0,0.10);
+}
 #map { 
-    height: 700px;
-    width: 1880px;
-    margin-left: 20px;
-    margin-top: 20px;
+    height: 100vh;
+    width: 100vw;
+    z-index: 0;
 }
 
 #btn {
     margin-top: 20px;
 }
-// .my-div-icon {
 
-//     background: blue;
-//     border:3px solid rgba(0, 0, 0, 0.5);
-//     left: -1.5rem;
-//     top: -1.5rem;
-//     position: absolute;
-//     border-radius: 1rem 1rem 0;
-//     display: inline-block;
-//     transform: rotate(45deg);
-// }
-
-.marker-icon-red {
-
-    background: red;
-    border:3px solid rgba(255, 255, 255, 0.5);
-    left: -1.5rem;
-    top: -1.5rem;
-    position: absolute;
-    border-radius: 1rem 1rem 0;
-    display: inline-block;
-    // transform: rotate(270deg);
-}
 
 
 </style>
