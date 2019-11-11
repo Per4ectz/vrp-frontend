@@ -105,7 +105,7 @@ export default {
             position: absolute;
             border-radius: 3rem 3rem 0;
             transform: rotate(45deg);
-            border:10px solid rgba(0, 0, 0, 0.8);`
+            border:5px solid rgba(0, 0, 0, 0.8);`
 
             const iconz = L.divIcon({
             className: "my-custom-pin",
@@ -172,7 +172,7 @@ export default {
                 const iconx = L.divIcon({
                 className: "my-custom-pin",
                 iconSize: [30, 30],
-                html: `<span style="${markerHtmlStyles}" />`
+                html: `<span style="${markerHtmlStyles}" />`+`<div style="font-weight: bold; font-size: 15px; transform: rotate(-45deg);">${e.deliveryOrder}</div>`
                 })
 
                 this.marker = L.marker(e.coordinates, {icon: iconx}).addTo(this.map);
