@@ -3,29 +3,29 @@
     <!-- <h1 style="margin-bottom: 30px">Vehicle Routing Problem</h1> -->
     <div id="orderGen">
         <div id="orderAmount" style="display: inline-block; margin-right: 20px">
-            <label style="display: block; text-align: left">Order Amount</label>
+            <label style="display: block; text-align: left; font-weight: bold;">Order Amount</label>
             <b-form-input v-model="orderAmount" placeholder="Number of orders" style="width: 150px" v-bind:disabled="file != null"></b-form-input>
         </div>
 
         <span style="margin-right: 20px">or</span>
 
         <div id="uploadField" style="display: inline-block; margin-right: 20px">
-            <label style="display: block; text-align: left">Upload Order</label>
+            <label style="display: block; text-align: left; font-weight: bold;">Upload Order</label>
             <b-form-file id="uploadBtn" accept=".json" v-model="file" 
             :state="Boolean(file)" placeholder="Choose a file" drop-placeholder="Drop file here..." 
             style="text-align: left; width: 250px" v-bind:disabled="orderAmount != ''"></b-form-file>
         </div>
         
         <div id="carNumField" style="display: inline-block; margin-right: 20px">
-            <label style="display: block; text-align: left">Car Amount</label>
+            <label style="display: block; text-align: left; font-weight: bold;">Car Amount</label>
             <b-form-input v-model="carNum" placeholder="Number of cars" style="width: 150px"></b-form-input>
         </div>
 
         <div id="solutionSelect" style="display: inline-block; margin-right: 20px">
-            <label style="display: block; text-align: left">Solution</label>
+            <label style="display: block; text-align: left; font-weight: bold;">Solution</label>
             <b-form-select v-model="selected" :options="options"></b-form-select>
         </div>
-        <b-button variant="primary" style="width: 200px" @click="putData()">Submit</b-button>
+        <b-button variant="primary" style="width: 200px; font-weight: bold;" @click="putData()">Submit</b-button>
     </div>
     <div id="map" class="map"></div> 
     
@@ -171,8 +171,10 @@ export default {
 
                 const iconx = L.divIcon({
                 className: "my-custom-pin",
-                iconSize: [30, 30],
-                html: `<span style="${markerHtmlStyles}" />`+`<div style="font-weight: bold; font-size: 15px; transform: rotate(-45deg);">${e.deliveryOrder}</div>`
+                iconAnchor: [0, 24],
+                labelAnchor: [-6, 0],
+                popupAnchor: [0, -36],
+                html: `<span style="${markerHtmlStyles}" />`+`<div style="font-weight: bold; font-size: 15px; transform: rotate(-45deg); color:black; font-family: Montserrat; padding: 2px;">${e.deliveryOrder}</div>`
                 })
 
                 this.marker = L.marker(e.coordinates, {icon: iconx}).addTo(this.map);
@@ -223,7 +225,7 @@ export default {
     left: 10px;
     top: 0px;
     z-index: 1;
-    width: 60%;
+    width:60%;
     height: 100px;
     border-radius: 10px;
     box-shadow: 0px 0px 14px 1px rgba(0,0,0,0.10);
