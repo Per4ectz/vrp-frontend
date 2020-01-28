@@ -26,7 +26,7 @@
             <b-form-select v-model="selected" :options="options"></b-form-select>
         </div>
         <b-button variant="primary" style="width: 200px; font-weight: bold; margin-right: 20px" @click="putData()">Submit</b-button>
-        <b-button variant="secondary" style="width: 200px; font-weight: bold;" @click="putData()">Clear</b-button>
+        <b-button variant="secondary" style="width: 200px; font-weight: bold;" @click="clearData()">Clear</b-button>
     </div>
     <div id="map" class="map"></div> 
     
@@ -62,15 +62,16 @@ export default {
                 className: 'my-div-icon',
                 iconSize: [30, 30]}),
             colour: [],
-            colorZ: null
+            colorZ: null,
+            markerLayer: null
+
             }
              
     },
     mounted() {
         this.initMap()
         this.initMarker()
-        // this.initPolygon()
-        
+    
     },
     watch: {
         file(val) {
@@ -142,6 +143,7 @@ export default {
         },
         putData() {
             this.genOrder()
+            this.markerLayer = L.layerGroup().addTo(this.map);
 
             var orders = {
                 solution: this.selected,
@@ -178,7 +180,7 @@ export default {
                 html: `<span style="${markerHtmlStyles}" />`+`<div style="font-weight: bold; font-size: 15px; transform: rotate(-45deg); color:black; font-family: Montserrat; padding: 2px;">${e.deliveryOrder}</div>`
                 })
 
-                this.marker = L.marker(e.coordinates, {icon: iconx}).addTo(this.map);
+                this.marker = L.marker(e.coordinates, {icon: iconx}).addTo(this.markerLayer);
                     console.log(e.carNumber)
                 })
             })
@@ -212,6 +214,10 @@ export default {
                 orders.push(s)
                 this.orderArray = orders
             })
+        },
+        clearData() {
+            this.markerLayer.clearLayers();
+            console.log('Click Clear Btn!')
         }
     }
 }
