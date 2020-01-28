@@ -4,7 +4,7 @@
     <div id="orderGen">
         <div id="orderAmount" style="display: inline-block; margin-right: 20px">
             <label style="display: block; text-align: left; font-weight: bold;">Order Amount</label>
-            <b-form-input v-model="orderAmount" placeholder="Number of orders" style="width: 150px" v-bind:disabled="file != null"></b-form-input>
+            <b-form-input v-model="orderAmount" placeholder="Number of orders" style="width: 170px" v-bind:disabled="file != null"></b-form-input>
         </div>
 
         <span style="margin-right: 20px">or</span>
@@ -25,7 +25,8 @@
             <label style="display: block; text-align: left; font-weight: bold;">Solution</label>
             <b-form-select v-model="selected" :options="options"></b-form-select>
         </div>
-        <b-button variant="primary" style="width: 200px; font-weight: bold;" @click="putData()">Submit</b-button>
+        <b-button variant="primary" style="width: 200px; font-weight: bold; margin-right: 20px" @click="putData()">Submit</b-button>
+        <b-button variant="secondary" style="width: 200px; font-weight: bold;" @click="putData()">Clear</b-button>
     </div>
     <div id="map" class="map"></div> 
     
@@ -225,7 +226,7 @@ export default {
     left: 10px;
     top: 0px;
     z-index: 1;
-    width:60%;
+    width:75%;
     height: 100px;
     border-radius: 10px;
     box-shadow: 0px 0px 14px 1px rgba(0,0,0,0.10);
