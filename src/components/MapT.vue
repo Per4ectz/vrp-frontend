@@ -58,9 +58,6 @@ export default {
                 { value: null, text: 'Please select a solution' },
                 { value: 'kmean', text: 'Kmean' },
                 ],
-            myIcon : L.divIcon({
-                className: 'my-div-icon',
-                iconSize: [30, 30]}),
             colour: [],
             colorZ: null,
             markerLayer: null
@@ -96,7 +93,6 @@ export default {
             this.tileLayer.addTo(this.map); 
         },
         initMarker() {
-            // this.marker = L.marker([13.753960, 100.502243], {icon: this.myIcon}).addTo(this.map)
             const markerStyles = `
             background-color: white;
             width: 2rem;
@@ -217,6 +213,7 @@ export default {
         },
         clearData() {
             this.markerLayer.clearLayers();
+            this.orderAmount = null;
             console.log('Click Clear Btn!')
         }
     }
