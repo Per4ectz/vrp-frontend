@@ -5,7 +5,7 @@ var fs = require('fs');
 // let jsontest = require('./orders.json')
 
 function generateRandomLat() {
-    var arr = [];
+    var arr = {};
     for(let i = 0; i<=299; i++) {
         // var arr = [];
         arr.push([])
@@ -18,13 +18,12 @@ var x = generateRandomLat()
 
 var orders = [];
 x.forEach((c) => {
-    console.log(c)
+    // console.log(c)
     var s = {
-        coordinates : c, width: 100,
-        length: 100,
-        height: 100,
-        weight: 10 ,
-    }
+        coordinates : {lat:c[0], lon:c[1]}, width: Math.floor((Math.random() * 50) + 1),
+        length: Math.floor((Math.random() * 100) + 1),
+        height: Math.floor((Math.random() * 50) + 1)
+    } 
     orders.push(s)    
 })
 var allOrder = {
@@ -32,6 +31,8 @@ var allOrder = {
     numberOfCars: "20",
     orders: orders
 }
+
+console.log('Hello')
 
 let data = JSON.stringify(allOrder, null, 2);
 

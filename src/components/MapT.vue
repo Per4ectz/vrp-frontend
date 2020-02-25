@@ -134,7 +134,7 @@ export default {
             }
             fileValue.readAsText(this.file);
             this.fileData = fileValue
-            console.log('teste : ',this.fileData.result)
+            // console.log('teste : ',this.fileData.result)
 
         },
         putData() {
@@ -202,10 +202,9 @@ export default {
             var orders = [];
             arr.forEach((c) => {
                 var s = {
-                    coordinates : c, width: 100,
-                    length: 100,
-                    height: 100,
-                    weight: 10 ,
+                    coordinates : {lat:c[0], lon:c[1]}, width: Math.floor((Math.random() * 50) + 1),
+                    length: Math.floor((Math.random() * 100) + 1),
+                    height: Math.floor((Math.random() * 50) + 1)
                 }
                 orders.push(s)
                 this.orderArray = orders
