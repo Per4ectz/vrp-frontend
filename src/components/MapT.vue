@@ -199,7 +199,7 @@ export default {
             var arr = [];
             for(let i = 0; i<this.orderAmount; i++) {
                 arr.push([])
-                arr[i].push(Math.random().toFixed(6) * (+14.0 - +13.6) + +13.6, Math.random().toFixed(6) * (+100.6 - +100.1) + +100.1)
+                arr[i].push(Math.random().toFixed(6) * (+13.9 - +13.6) + +13.6, Math.random().toFixed(6) * (+100.5 - +100.1) + +100.1)
             }
 
             var orders = [];
