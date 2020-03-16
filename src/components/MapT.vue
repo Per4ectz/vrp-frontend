@@ -196,7 +196,7 @@ export default {
             var arr = [];
             for(let i = 0; i<this.orderAmount; i++) {
                 arr.push([])
-                arr[i].push(Math.random().toFixed(6) * (+14.0 - +13.5) + +13.5, Math.random().toFixed(6) * (+100.6 - +100.0) + +100.0)
+                arr[i].push(Math.random().toFixed(6) * (+14.0 - +13.6) + +13.6, Math.random().toFixed(6) * (+100.6 - +100.1) + +100.1)
             }
 
             var orders = [];
@@ -204,7 +204,8 @@ export default {
                 var s = {
                     coordinates : {lat:c[0], lon:c[1]}, width: Math.floor((Math.random() * 50) + 1),
                     length: Math.floor((Math.random() * 100) + 1),
-                    height: Math.floor((Math.random() * 50) + 1)
+                    height: Math.floor((Math.random() * 50) + 1),
+                    weight: Math.floor((Math.random() * 50) + 1)
                 }
                 orders.push(s)
                 this.orderArray = orders

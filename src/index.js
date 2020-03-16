@@ -5,11 +5,11 @@ var fs = require('fs');
 // let jsontest = require('./orders.json')
 
 function generateRandomLat() {
-    var arr = {};
-    for(let i = 0; i<=299; i++) {
+    var arr = [];
+    for(let i = 0; i<=4; i++) {
         // var arr = [];
         arr.push([])
-        arr[i].push(Math.random().toFixed(6) * (+14.0 - +13.5) + +13.5, Math.random().toFixed(6) * (+100.6 - +100.0) + +100.0)
+        arr[i].push(Math.random().toFixed(6) * (+14.0 - +13.6) + +13.6, Math.random().toFixed(6) * (+100.6 - +100.1) + +100.1)
     }
     return arr;
 }
