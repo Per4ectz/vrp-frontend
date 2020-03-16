@@ -57,6 +57,7 @@ export default {
                 options: [
                 { value: null, text: 'Please select a solution' },
                 { value: 'kmean', text: 'Kmean' },
+                { value: 'qlearning', text: 'Q-Learning' },
                 ],
             colour: [],
             colorZ: null,
@@ -139,15 +140,18 @@ export default {
         },
         putData() {
             this.genOrder()
-            this.markerLayer = L.layerGroup().addTo(this.map);
-
+            if (this.markerLayer == null ) {
+                this.markerLayer = L.layerGroup().addTo(this.map) ;
+                }
+            else {
+                this.markerLayer.clearLayers();
+                }
             var orders = {
                 solution: this.selected,
                 numberOfCars: this.carNum,
                 orders: this.orderArray
             }
             console.log(orders)
-
             axios.put('http://localhost:8080/api/order', {
                 orders
             })
@@ -175,7 +179,6 @@ export default {
                 popupAnchor: [0, -36],
                 html: `<span style="${markerHtmlStyles}" />`+`<div style="font-weight: bold; font-size: 15px; transform: rotate(-45deg); color:black; font-family: Montserrat; padding: 2px;">${e.deliveryOrder}</div>`
                 })
-
                 this.marker = L.marker(e.coordinates, {icon: iconx}).addTo(this.markerLayer);
                     console.log(e.carNumber)
                 })
@@ -204,16 +207,17 @@ export default {
                 var s = {
                     coordinates : {lat:c[0], lon:c[1]}, width: Math.floor((Math.random() * 50) + 1),
                     length: Math.floor((Math.random() * 100) + 1),
-                    height: Math.floor((Math.random() * 50) + 1),
-                    weight: Math.floor((Math.random() * 50) + 1)
+                    height: Math.floor((Math.random() * 50) + 1)
                 }
                 orders.push(s)
                 this.orderArray = orders
             })
         },
         clearData() {
-            this.markerLayer.clearLayers();
+            // this.markerLayer.clearLayers();
             this.orderAmount = null;
+            this.carNum = null;
+            this.selected = null;
             console.log('Click Clear Btn!')
         }
     }

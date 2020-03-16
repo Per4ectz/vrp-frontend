@@ -6,7 +6,7 @@ var fs = require('fs');
 
 function generateRandomLat() {
     var arr = [];
-    for(let i = 0; i<=4; i++) {
+    for(let i = 0; i<=299; i++) {
         // var arr = [];
         arr.push([])
         arr[i].push(Math.random().toFixed(6) * (+14.0 - +13.6) + +13.6, Math.random().toFixed(6) * (+100.6 - +100.1) + +100.1)
