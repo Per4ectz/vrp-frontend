@@ -2,13 +2,16 @@
 <div>
     <!-- <h1 style="margin-bottom: 30px">Vehicle Routing Problem</h1> -->
     <div id="orderGen">
-        <div id="orderAmount" style="display: inline-block; margin-right: 20px">
-            <label style="display: block; text-align: left; font-weight: bold;">Order Amount</label>
-            <b-form-input v-model="orderAmount" placeholder="Number of orders" style="width: 170px" v-bind:disabled="file != null"></b-form-input>
+        <div id="solutionSelect" style="display: inline-block; margin-right: 20px">
+            <label style="display: block; text-align: left; font-weight: bold;">Solution</label>
+            <b-form-select v-model="selected" :options="options"></b-form-select>
         </div>
 
+        <div id="orderAmount" style="display: inline-block; margin-right: 20px">
+            <label style="display: block; text-align: left; font-weight: bold;">Order Amount</label>
+            <b-form-input v-model="orderAmount" placeholder="Number of orders" style="width: 170px" v-bind:disabled="this.file != null"></b-form-input>
+        </div>
         <span style="margin-right: 20px">or</span>
-
         <div id="uploadField" style="display: inline-block; margin-right: 20px">
             <label style="display: block; text-align: left; font-weight: bold;">Upload Order</label>
             <b-form-file id="uploadBtn" accept=".json" v-model="file" 
@@ -18,17 +21,14 @@
         
         <div id="carNumField" style="display: inline-block; margin-right: 20px">
             <label style="display: block; text-align: left; font-weight: bold;">Car Amount</label>
-            <b-form-input v-model="carNum" placeholder="Number of cars" style="width: 150px"></b-form-input>
+            <b-form-input v-model="carNum" placeholder="Number of cars" style="width: 160px" v-bind:disabled="isDisabled"></b-form-input>
         </div>
 
-        <div id="solutionSelect" style="display: inline-block; margin-right: 20px">
-            <label style="display: block; text-align: left; font-weight: bold;">Solution</label>
-            <b-form-select v-model="selected" :options="options"></b-form-select>
-        </div>
+        
         <b-button variant="primary" style="width: 200px; font-weight: bold; margin-right: 20px" @click="putData()">Submit</b-button>
         <b-button variant="secondary" style="width: 200px; font-weight: bold;" @click="clearData()">Clear</b-button>
     </div>
-    <div id="map" class="map"></div> 
+    <div v-loading="loading" id="map" class="map"></div> 
     
     
     <!-- <b-button id="btn" variant="primary" @click="putData()">Put API</b-button> -->
@@ -61,24 +61,33 @@ export default {
                 ],
             colour: [],
             colorZ: null,
-            markerLayer: null
-
+            markerLayer: null,
+            loading: false
             }
              
     },
     mounted() {
         this.initMap()
-        this.initMarker()
+        // this.initMarker()
     
+    },
+    computed: {
+    isDisabled() {
+        return this.selected == 'qlearning' || this.file != null;
+        },
+    isLoading() {
+        return this.loading;
+    }
     },
     watch: {
         file(val) {
             this.readOrder()
             console.log(val)
         },
-        colour(val) {
-            console.log(val)
+        selected(val) {
+            if(val == 'qlearning') this.carNum = null;
         },
+
 
     },
     methods: {
@@ -92,32 +101,29 @@ export default {
             }
             );
             this.tileLayer.addTo(this.map); 
-        },
-        initMarker() {
-            const markerStyles = `
-            background-color: white;
-            width: 2rem;
-            height: 2rem;
-            display: inline-block;
-            left: -1.5rem;
-            top: -1.5rem;
-            position: absolute;
-            border-radius: 3rem 3rem 0;
-            transform: rotate(45deg);
-            border:5px solid rgba(0, 0, 0, 0.8);`
+        // },
+        // initMarker() {
+        //     const markerStyles = `
+        //     background-color: white;
+        //     width: 2rem;
+        //     height: 2rem;
+        //     display: inline-block;
+        //     left: -1.5rem;
+        //     top: -1.5rem;
+        //     position: absolute;
+        //     border-radius: 3rem 3rem 0;
+        //     transform: rotate(45deg);
+        //     border:5px solid rgba(0, 0, 0, 0.8);`
 
-            const iconz = L.divIcon({
-            className: "my-custom-pin",
-            iconAnchor: [0, 24],
-            labelAnchor: [-6, 0],
-            popupAnchor: [0, -36],
-            html: `<span style="${markerStyles}" />`
-            })
+        //     const iconz = L.divIcon({
+        //     className: "my-custom-pin",
+        //     iconAnchor: [0, 24],
+        //     labelAnchor: [-6, 0],
+        //     popupAnchor: [0, -36],
+        //     html: `<span style="${markerStyles}" />`
+        //     })
 
-                this.marker = L.marker([13.753960, 100.502243], {icon: iconz}).addTo(this.map).bindPopup("Root Marker");
-
-           
-           
+        //         this.marker = L.marker([13.753960, 100.502243], {icon: iconz}).addTo(this.map).bindPopup("Root Marker");
         },
         initPolygon() {
             this.polygon = L.polygon([[13.813118, 100.041182],
@@ -139,6 +145,7 @@ export default {
 
         },
         putData() {
+            this.loading = true
             this.genOrder()
             if (this.markerLayer == null ) {
                 this.markerLayer = L.layerGroup().addTo(this.map) ;
@@ -156,8 +163,9 @@ export default {
                 orders
             })
             .then((response) => {
+                console.log(response)
                 for(var c = 0; c < this.carNum;c++) this.getRandomColor()
-                response.data.forEach((e) => {
+                response.data.order.forEach((e) => {
                 
                 const myCustomColour = this.colour[e.carNumber]
                 const markerHtmlStyles = `
@@ -181,7 +189,7 @@ export default {
                 })
                 this.marker = L.marker(e.coordinates, {icon: iconx}).addTo(this.markerLayer);
                     console.log(e.carNumber)
-                })
+                },this.loading = false)
             })
             .catch((error) => {
                 console.log(error);
@@ -233,7 +241,7 @@ export default {
     left: 10px;
     top: 0px;
     z-index: 1;
-    width:75%;
+    width:72%;
     height: 100px;
     border-radius: 10px;
     box-shadow: 0px 0px 14px 1px rgba(0,0,0,0.10);
