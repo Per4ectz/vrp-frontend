@@ -26,5 +26,12 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  font-size: 1rem;
+}
+
+@media (max-width: 1440px) {
+  #app {
+    font-size: 0.8rem;
+  }
 }
 </style>

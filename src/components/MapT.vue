@@ -9,24 +9,24 @@
 
         <div id="orderAmount" style="display: inline-block; margin-right: 20px">
             <label style="display: block; text-align: left; font-weight: bold;">Order Amount</label>
-            <b-form-input v-model="orderAmount" placeholder="Number of orders" style="width: 170px" v-bind:disabled="this.file != null"></b-form-input>
+            <b-form-input v-model="orderAmount" placeholder="Number of orders" v-bind:disabled="this.file != null"></b-form-input>
         </div>
         <span style="margin-right: 20px">or</span>
         <div id="uploadField" style="display: inline-block; margin-right: 20px">
             <label style="display: block; text-align: left; font-weight: bold;">Upload Order</label>
             <b-form-file id="uploadBtn" accept=".json" v-model="file" 
             :state="Boolean(file)" placeholder="Choose a file" drop-placeholder="Drop file here..." 
-            style="text-align: left; width: 250px" v-bind:disabled="orderAmount != ''"></b-form-file>
+            style="text-align: left;" v-bind:disabled="orderAmount != ''"></b-form-file>
         </div>
         
         <div id="carNumField" style="display: inline-block; margin-right: 20px">
             <label style="display: block; text-align: left; font-weight: bold;">Car Amount</label>
-            <b-form-input v-model="carNum" placeholder="Number of cars" style="width: 160px" v-bind:disabled="isDisabled"></b-form-input>
+            <b-form-input class="car-num-field" v-model="carNum" placeholder="Number of cars" v-bind:disabled="isDisabled"></b-form-input>
         </div>
 
         
-        <b-button variant="primary" style="width: 200px; font-weight: bold; margin-right: 20px" @click="putData()">Submit</b-button>
-        <b-button variant="secondary" style="width: 200px; font-weight: bold;" @click="clearData()">Clear</b-button>
+        <b-button id="submitBtn" variant="primary" @click="putData()">Submit</b-button>
+        <b-button id="clearBtn" variant="secondary" @click="clearData()">Clear</b-button>
     </div>
     <div v-loading="loading" id="map" class="map"></div> 
     
@@ -256,6 +256,68 @@ export default {
     margin-top: 20px;
 }
 
+#orderAmount {
+    .form-control {
+      width: 170px;
+    }  
+  }
+
+#uploadBtn {
+    width: 250px;
+}
+
+#carNumField {
+    .form-control {
+        width: 160px;
+    }
+}
+
+#submitBtn {
+    width: 200px; 
+    margin-right: 20px
+}
+
+#clearBtn {
+    width: 200px; 
+}
 
 
+@media (max-width: 1440px) {
+    #orderGen {
+        height: 90px;
+    }
+    #solutionSelect {
+        .custom-select {
+            width: 195px;
+            font-size: 0.8rem;
+        }  
+    }
+    #orderAmount {
+        .form-control {
+            width: 150px;
+            font-size: 0.8rem;
+        }
+    }
+    #uploadBtn {
+        width: 180px;
+        font-size: 0.8rem;
+    }
+    #carNumField {
+    .form-control {
+        width: 135px;
+        font-size: 0.8rem;
+    }
+    }
+    #submitBtn {
+        width: 110px;
+        font-size: 0.8rem;
+        margin-right: 10px
+
+    }
+    #clearBtn {
+        width: 110px; 
+        font-size: 0.8rem;   
+    } 
+    
+}
 </style>
