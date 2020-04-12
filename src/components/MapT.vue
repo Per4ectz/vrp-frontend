@@ -252,9 +252,9 @@ export default {
       arr.forEach(c => {
         var s = {
           coordinates: { lat: c[0], lon: c[1] },
-          width: Math.floor(Math.random() * 50 + 1),
-          length: Math.floor(Math.random() * 100 + 1),
-          height: Math.floor(Math.random() * 50 + 1)
+          width: Math.floor(Math.random() * 50 ) + 10,
+          length: Math.floor(Math.random() * 100 ) + 2,
+          height: Math.floor(Math.random() * 100 )+ 15
         };
         orders.push(s);
         this.orderArray = orders;
