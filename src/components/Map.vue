@@ -162,7 +162,7 @@ export default {
             });
         },
         postData() {
-            axios.put('http://161.246.35.125:8080/api/order', {
+            axios.put('http://161.246.35.125:8080/api/request', {
                 orders
             })
             .then((response) => {
