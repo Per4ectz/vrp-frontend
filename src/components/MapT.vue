@@ -159,7 +159,7 @@ export default {
                 orders: this.orderArray
             }
             console.log(orders)
-            axios.put('http://localhost:8080/api/order', {
+            axios.put('http://localhost:8080/api/request', {
                 orders
             })
             .then((response) => {
