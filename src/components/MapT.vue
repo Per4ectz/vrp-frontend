@@ -46,12 +46,14 @@
     <b-button id="reqList" variant="primary" @click="dialogTableVisible = true">List</b-button>
 
     <el-dialog title="Request List" :visible.sync="dialogTableVisible">
-      <el-table >
-        <el-table-column property="reqNo" label="Request No." width="200"></el-table-column>
-        <el-table-column property="orderAm" label="Order Amount" width="200"></el-table-column>
+      <el-table :data="orderData">
+        <!-- <el-table-column property="date" label="Request No." width="200"></el-table-column> -->
+        <!-- <el-table-column property="" label="Order Amount" width="200"></el-table-column> -->
         <el-table-column property="status" label="Status"></el-table-column>
+        <el-table-column property="operation" label="Operations">
+          <el-button size="mini" @click="dialogTableVisible = false">Plot</el-button>
+        </el-table-column>
       </el-table>
-      <el-button id="plotBtn" @click="dialogFormVisible = false">Cancel</el-button>
     </el-dialog>
     
     <div v-loading="loading" id="map" class="map"></div>
@@ -89,6 +91,9 @@ export default {
       requestID: null,
       requestInterval: null,
       dialogTableVisible: false
+      ,orderData : null
+      ,orderStatus : []
+      ,reqID : []
     };
   },
   mounted() {
@@ -166,6 +171,11 @@ export default {
           const { id } = response.data;
 
           this.requestID = id;
+          console.log(response)
+          // if(orders) {
+          //   this.orderData = res.data
+          //   // this.orderStatus = status
+          // }
 
           if (this.requestInterval) {
             clearInterval(this.requestInterval);
@@ -177,11 +187,12 @@ export default {
               .get(`http://localhost:8080/api/request/${this.requestID}`)
               .then(res => {
                 const { status, orders } = res.data;
-                console.log(res)
-
+                // console.log(res)
+                
                 if (status === "finish" || status === "reject") {
                   clearInterval(this.requestInterval);
                   this.requestInterval = null;
+
                   var carNumCheck = 0
                   var findCarNum = false;
                   if(this.selected == "kmean"){

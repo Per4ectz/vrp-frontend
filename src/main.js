@@ -8,7 +8,6 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import locale from 'element-ui/lib/locale/lang/en'
-import VueMaterial from 'vue-material'
 // import axios from 'axios'
 
 Vue.config.productionTip = false
@@ -16,7 +15,6 @@ Vue.config.productionTip = false
 Vue.use(ElementUI, { locale })
 Vue.use(BootstrapVue)
 Vue.use(L)
-Vue.use(VueMaterial)
 // Vue.use(axios)
 
 Vue.use(VueGoogleMaps, {
