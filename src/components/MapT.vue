@@ -43,6 +43,17 @@
       <b-button id="submitBtn" variant="primary" @click="putData()">Submit</b-button>
       <b-button id="clearBtn" variant="secondary" @click="clearData()">Clear</b-button>
     </div>
+    <b-button id="reqList" variant="primary" @click="dialogTableVisible = true">List</b-button>
+
+    <el-dialog title="Request List" :visible.sync="dialogTableVisible">
+      <el-table >
+        <el-table-column property="reqNo" label="Request No." width="200"></el-table-column>
+        <el-table-column property="orderAm" label="Order Amount" width="200"></el-table-column>
+        <el-table-column property="status" label="Status"></el-table-column>
+      </el-table>
+      <el-button id="plotBtn" @click="dialogFormVisible = false">Cancel</el-button>
+    </el-dialog>
+    
     <div v-loading="loading" id="map" class="map"></div>
 
     <!-- <b-button id="btn" variant="primary" @click="putData()">Put API</b-button> -->
@@ -77,12 +88,11 @@ export default {
       loading: false,
       requestID: null,
       requestInterval: null,
-      largest: null
+      dialogTableVisible: false
     };
   },
   mounted() {
     this.initMap();
-    // this.initMarker()
   },
   computed: {
     isDisabled() {
@@ -103,7 +113,8 @@ export default {
   },
   methods: {
     initMap() {
-      this.map = L.map("map").setView([13.75396, 100.502243], 10);
+      
+      this.map = L.map("map",{ zoomControl: false }).setView([13.75396, 100.502243], 10);
       this.tileLayer = L.tileLayer(
         "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
         {
@@ -113,29 +124,6 @@ export default {
         }
       );
       this.tileLayer.addTo(this.map);
-      // },
-      // initMarker() {
-      //     const markerStyles = `
-      //     background-color: white;
-      //     width: 2rem;
-      //     height: 2rem;
-      //     display: inline-block;
-      //     left: -1.5rem;
-      //     top: -1.5rem;
-      //     position: absolute;
-      //     border-radius: 3rem 3rem 0;
-      //     transform: rotate(45deg);
-      //     border:5px solid rgba(0, 0, 0, 0.8);`
-
-      //     const iconz = L.divIcon({
-      //     className: "my-custom-pin",
-      //     iconAnchor: [0, 24],
-      //     labelAnchor: [-6, 0],
-      //     popupAnchor: [0, -36],
-      //     html: `<span style="${markerStyles}" />`
-      //     })
-
-      //         this.marker = L.marker([13.753960, 100.502243], {icon: iconz}).addTo(this.map).bindPopup("Root Marker");
     },
     initPolygon() {
       this.polygon = L.polygon([
@@ -189,8 +177,9 @@ export default {
               .get(`http://localhost:8080/api/request/${this.requestID}`)
               .then(res => {
                 const { status, orders } = res.data;
+                console.log(res)
 
-                if (status === "finish") {
+                if (status === "finish" || status === "reject") {
                   clearInterval(this.requestInterval);
                   this.requestInterval = null;
                   var carNumCheck = 0
@@ -210,7 +199,7 @@ export default {
                   }
 
                   orders.forEach(e => { 
-                    console.log(this.colour)
+                    // console.log(this.colour)
                     const myCustomColour = this.colour[e.carNumber];
                     const markerHtmlStyles = `
                       background-color: ${myCustomColour};
@@ -299,6 +288,18 @@ export default {
   top: 0px;
   z-index: 1;
   width: 72%;
+  height: 100px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 14px 1px rgba(0, 0, 0, 0.1);
+}
+#reqList {
+  margin-top: 10px;
+  padding: 10px;
+  position: absolute;
+  left: 1400px;
+  top: 0px;
+  z-index: 1;
+  width: 100px;
   height: 100px;
   border-radius: 10px;
   box-shadow: 0px 0px 14px 1px rgba(0, 0, 0, 0.1);
