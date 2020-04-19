@@ -76,7 +76,8 @@ export default {
       markerLayer: null,
       loading: false,
       requestID: null,
-      requestInterval: null
+      requestInterval: null,
+      largest: null
     };
   },
   mounted() {
@@ -191,10 +192,25 @@ export default {
 
                 if (status === "finish") {
                   clearInterval(this.requestInterval);
-
                   this.requestInterval = null;
-                  for (var c = 0; c < this.carNum; c++) this.getRandomColor();
-                  orders.forEach(e => {
+                  var carNumCheck = 0
+                  var findCarNum = false;
+                  if(this.selected == "kmean"){
+                    for (var c = 0; c < this.carNum; c++) this.getRandomColor();
+                  } else{
+                    orders.forEach(e => {
+                      if(carNumCheck <= e.carNumber) carNumCheck = e.carNumber;
+                    })
+                    carNumCheck = carNumCheck + 1
+                    findCarNum = true
+                  }
+                  if(findCarNum == true){
+                    for (var c = 0; c < carNumCheck; c++) this.getRandomColor();
+                    findCarNum = false
+                  }
+
+                  orders.forEach(e => { 
+                    console.log(this.colour)
                     const myCustomColour = this.colour[e.carNumber];
                     const markerHtmlStyles = `
                       background-color: ${myCustomColour};
@@ -220,8 +236,10 @@ export default {
                     this.marker = L.marker(e.coordinates, {
                       icon: iconx
                     }).addTo(this.markerLayer);
-                    console.log(e.carNumber);
-                  }, (this.loading = false));
+                    // console.log(e.carNumber);
+                  }) 
+                  this.loading = false
+                  this.colour = []
                 }
               });
           }, 5000);
