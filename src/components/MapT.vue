@@ -255,6 +255,8 @@ export default {
       this.orderData = null;
       this.isPending = true;
       this.loading = true;
+      this.orderInfo = []
+      this.volumeTotal = 0
       this.genOrder();
       if (this.markerLayer == null) {
         this.markerLayer = L.layerGroup().addTo(this.map);
