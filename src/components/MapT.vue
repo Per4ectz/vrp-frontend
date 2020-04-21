@@ -1,7 +1,6 @@
 <template>
   <div>
-    <!-- <h1 style="margin-bottom: 30px">Vehicle Routing Problem</h1> -->
-    <div id="orderGen">
+    <!-- <div id="orderGen">
       <div id="solutionSelect" style="display: inline-block; margin-right: 20px">
         <label style="display: block; text-align: left; font-weight: bold;">Solution</label>
         <b-form-select v-model="selected" :options="options"></b-form-select>
@@ -42,18 +41,112 @@
 
       <b-button id="submitBtn" variant="primary" @click="putData()">Submit</b-button>
       <b-button id="clearBtn" variant="secondary" @click="clearData()">Clear</b-button>
-    </div>
-    <b-button id="reqList" variant="primary" @click="dialogTableVisible = true">List</b-button>
+    </div> -->
 
-    <el-dialog title="Request List" :visible.sync="dialogTableVisible">
-      <el-table :data="orderData">
-        <!-- <el-table-column property="date" label="Request No." width="200"></el-table-column> -->
-        <!-- <el-table-column property="" label="Order Amount" width="200"></el-table-column> -->
-        <el-table-column property="status" label="Status"></el-table-column>
+    <div id="orderMenu">
+      <el-button id="menuBtn" @click="clickMenu()"><i class="el-icon-menu"></i></el-button>
+      <el-menu class="el-menu-vertical-demo" :collapse="isCollapse" style="text-align: left !important">
+        <el-menu-item index="1" @click="createClick()">
+          <i class="el-icon-add-location" variant="outline-primary"></i>
+          <span slot="title">Create Order Request</span>
+        </el-menu-item>
+
+        <el-menu-item index="2" @click="reqListClick()">
+          <i class="el-icon-tickets"></i>
+          <span slot="title">Request List</span>
+        </el-menu-item>
+
+        <el-menu-item index="3" @click="infoClick()">
+          <i class="el-icon-map-location"></i>
+          <span slot="title">Order Information</span>
+        </el-menu-item>
+      </el-menu>
+    </div>
+
+    
+    
+    <el-dialog id="createOrder" title="Create Order Request" :visible.sync="dialogCreateVisible">
+      <div id="solutionSelect" style="display: block; margin-bottom: 20px">
+        <label style="text-align: left; font-weight: bold;">Solution</label>
+        <b-form-select v-model="selected" :options="options"></b-form-select>
+      </div>
+
+      <div id="orderAmount" style="display: inline-block; margin-bottom: 20px;margin-right: 20px">
+        <label style="display: inline-block;text-align: left; font-weight: bold;">Order Amount</label>
+        <b-form-input
+          v-model="orderAmount"
+          placeholder="Number of orders"
+          v-bind:disabled="this.file != null"
+        ></b-form-input>
+      </div>
+
+      <span style="margin-top: 20px;margin-right: 20px">or</span>
+      
+      <div id="uploadField" style="display: inline-block; margin-bottom: 20px">
+        <label style="display: inline-block; text-align: left; font-weight: bold;">Upload Order</label>
+        <b-form-file
+          id="uploadBtn"
+          accept=".json"
+          v-model="file"
+          :state="Boolean(file)"
+          placeholder="Choose a file"
+          drop-placeholder="Drop file here..."
+          style="text-align: left;"
+          v-bind:disabled="orderAmount != ''"
+        ></b-form-file>
+      </div>
+      
+
+      <div id="carNumField" style="display: block; margin-bottom: 20px">
+        <label style="display: inline-block; text-align: left; font-weight: bold;">Car Amount</label>
+        <b-form-input
+          class="car-num-field"
+          v-model="carNum"
+          placeholder="Number of cars"
+          v-bind:disabled="isDisabled"
+        ></b-form-input>
+      </div>
+
+      <div style="margin-top: 40px; text-align: center">
+
+      <b-button id="submitBtn" variant="primary" @click="putData()">Submit</b-button>
+      <b-button id="clearBtn" variant="secondary" @click="clearData()">Clear</b-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog id="reqTable" title="Request List" :visible.sync="dialogTableVisible">
+      <el-table :data="requestArray">
+        <el-table-column property="reqId" label="Request Id" width="250"></el-table-column>
+        <el-table-column property="solution" label="Solution" width="100"></el-table-column>
+        <el-table-column property="orderAm" label="Order Amount" width="150"></el-table-column>
+        <el-table-column property="carAmount" label="Car Amount" width="150"></el-table-column>
+        <el-table-column property="reqStatus" label="Status"></el-table-column>
         <el-table-column property="operation" label="Operations">
-          <el-button size="mini" @click="dialogTableVisible = false">Plot</el-button>
+          <el-button v-bind:disabled="isPending" type="primary" size="mini" @click="plotOrder()">Plot Order</el-button>
         </el-table-column>
       </el-table>
+    </el-dialog>
+
+    <el-dialog id="infoDialog" title="Order Information" :visible.sync="dialogInfoVisible">
+      
+      <el-card shadow="always">
+        <div slot="header" class="clearfix">
+          <span>Total Volume</span>
+        </div>
+        <div v-if="volumeTotal">{{ volumeTotal.toFixed(2) }}</div>
+        <div v-else>No Data</div>
+      </el-card>
+
+      <el-card shadow="always" style="margin-top: 20px">
+        <el-table :data="orderInfo" >
+        <el-table-column type="index" label="Car No." width="100"></el-table-column>
+        <el-table-column label="Color" width="100">
+          <span class="item-color"></span>
+        </el-table-column>
+        <el-table-column property="volumeI" label="Volume"></el-table-column>
+        <el-table-column property="distanceI" label="Distance"></el-table-column>
+      </el-table>
+      </el-card>
     </el-dialog>
     
     <div v-loading="loading" id="map" class="map"></div>
@@ -68,6 +161,7 @@ import axios from "axios";
 export default {
   data() {
     return {
+      isCollapse: true,
       file: null,
       fileData: null,
       carNum: "",
@@ -90,10 +184,17 @@ export default {
       loading: false,
       requestID: null,
       requestInterval: null,
-      dialogTableVisible: false
-      ,orderData : null
-      ,orderStatus : []
-      ,reqID : []
+      dialogCreateVisible: false,
+      dialogTableVisible: false,
+      dialogInfoVisible: false,
+      orderData : null
+      ,haveList : false
+      ,requestArray : []
+      ,isPending : true
+      ,orderInfo : [],
+      distanceArray : null,
+      volumeArray: null,
+      volumeTotal: 0
     };
   },
   mounted() {
@@ -114,11 +215,20 @@ export default {
     },
     selected(val) {
       if (val == "qlearning") this.carNum = null;
+    },
+    dialogCreateVisible(val) {
+      if(!val) {
+        setTimeout(() => {
+          this.orderAmount = null;
+          this.carNum = null;
+          this.selected = null;
+        }, 500);
+        
+      }
     }
   },
   methods: {
     initMap() {
-      
       this.map = L.map("map",{ zoomControl: false }).setView([13.75396, 100.502243], 10);
       this.tileLayer = L.tileLayer(
         "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
@@ -129,15 +239,6 @@ export default {
         }
       );
       this.tileLayer.addTo(this.map);
-    },
-    initPolygon() {
-      this.polygon = L.polygon([
-        [13.813118, 100.041182],
-        [13.860658, 100.513227],
-        [14.020839, 100.525024],
-        [13.59946, 100.596947],
-        [13.54714, 100.274338]
-      ]).addTo(this.map);
     },
     async readOrder() {
       const fileValue = new FileReader();
@@ -150,6 +251,8 @@ export default {
       // console.log('teste : ',this.fileData.result)
     },
     putData() {
+      this.orderData = null;
+      this.isPending = true;
       this.loading = true;
       this.genOrder();
       if (this.markerLayer == null) {
@@ -169,13 +272,9 @@ export default {
         })
         .then(response => {
           const { id } = response.data;
-
           this.requestID = id;
-          console.log(response)
-          // if(orders) {
-          //   this.orderData = res.data
-          //   // this.orderStatus = status
-          // }
+          setTimeout(() => this.loading = false, 500); 
+          // console.log(this.requestArray)
 
           if (this.requestInterval) {
             clearInterval(this.requestInterval);
@@ -186,67 +285,103 @@ export default {
             axios
               .get(`http://localhost:8080/api/request/${this.requestID}`)
               .then(res => {
-                const { status, orders } = res.data;
-                // console.log(res)
+                const { status, orders } = res.data.request;
+                 var resCheck = {
+                  reqId : id,
+                  solution : res.data.request.solution,
+                  orderAm: orders.length,
+                  carAmount : res.data.request.numberOfCars,
+                  reqStatus : status
+                }
+                this.requestArray = []
+                this.requestArray.push(resCheck)
+                this.haveList = true
+
                 
+
+                // console.log(res.data.request.volume)
+
+                // console.log("req State : ", reqState)
                 if (status === "finish" || status === "reject") {
                   clearInterval(this.requestInterval);
                   this.requestInterval = null;
+                  this.orderData = orders
+                  this.isPending = false
+                  console.log('Order Data : ',this.orderData)
 
-                  var carNumCheck = 0
-                  var findCarNum = false;
-                  if(this.selected == "kmean"){
-                    for (var c = 0; c < this.carNum; c++) this.getRandomColor();
-                  } else{
-                    orders.forEach(e => {
-                      if(carNumCheck <= e.carNumber) carNumCheck = e.carNumber;
-                    })
-                    carNumCheck = carNumCheck + 1
-                    findCarNum = true
-                  }
-                  if(findCarNum == true){
-                    for (var c = 0; c < carNumCheck; c++) this.getRandomColor();
-                    findCarNum = false
-                  }
+                  this.volumeArray = res.data.request.volume
+                  // this.distanceArray = res.data.request.distance
+                // console.log(res.data.distance)
+                
 
-                  orders.forEach(e => { 
-                    // console.log(this.colour)
-                    const myCustomColour = this.colour[e.carNumber];
-                    const markerHtmlStyles = `
-                      background-color: ${myCustomColour};
-                      width: 2rem;
-                      height: 2rem;
-                      display: inline-block;
-                      left: -1.5rem;
-                      top: -1.5rem;
-                      position: absolute;
-                      border-radius: 3rem 3rem 0;
-                      transform: rotate(45deg);
-                      border:3px solid rgba(0, 0, 0, 0.5);`;
+                for (let i = 0; i < this.volumeArray.length; i++) {
+                  var info = {
+                    distanceI : res.data.request.distance[i].toFixed(2),
+                    volumeI : res.data.request.volume[i].toFixed(2)
+                  } 
+                  this.volumeTotal += this.volumeArray[i]
+                  this.orderInfo.push(info)
+                }
 
-                    const iconx = L.divIcon({
-                      className: "my-custom-pin",
-                      iconAnchor: [0, 24],
-                      labelAnchor: [-6, 0],
-                      popupAnchor: [0, -36],
-                      html:
-                        `<span style="${markerHtmlStyles}" />` +
-                        `<div style="font-weight: bold; font-size: 15px; transform: rotate(-45deg); color:black; font-family: Montserrat; padding: 2px;">${e.deliveryOrder}</div>`
-                    });
-                    this.marker = L.marker(e.coordinates, {
-                      icon: iconx
-                    }).addTo(this.markerLayer);
-                    // console.log(e.carNumber);
-                  }) 
-                  this.loading = false
-                  this.colour = []
+                console.log('order Info',this.orderInfo)
                 }
               });
           }, 5000);
+          this.dialogCreateVisible = false
         })
         .catch(error => {
           console.log(error);
         });
+    },
+    plotOrder() {
+      var carNumCheck = 0
+      var findCarNum = false;
+      if(this.selected == "kmean"){
+        for (var c = 0; c < this.carNum; c++) this.getRandomColor();
+      } else{
+        this.orderData.forEach(e => {
+          if(carNumCheck <= e.carNumber) carNumCheck = e.carNumber;
+        })
+        carNumCheck = carNumCheck + 1
+        findCarNum = true
+      }
+      if(findCarNum == true){
+        for (var cc = 0; cc < carNumCheck; cc++) this.getRandomColor();
+        findCarNum = false
+      }
+
+
+      this.orderData.forEach(e => { 
+        // console.log(this.colour)
+        const myCustomColour = this.colour[e.carNumber];
+        const markerHtmlStyles = `
+          background-color: ${myCustomColour};
+          width: 2rem;
+          height: 2rem;
+          display: inline-block;
+          left: -1.5rem;
+          top: -1.5rem;
+          position: absolute;
+          border-radius: 3rem 3rem 0;
+          transform: rotate(45deg);
+          border:3px solid rgba(0, 0, 0, 0.5);`;
+
+        const iconx = L.divIcon({
+          className: "my-custom-pin",
+          iconAnchor: [0, 24],
+          labelAnchor: [-6, 0],
+          popupAnchor: [0, -36],
+          html:
+            `<span style="${markerHtmlStyles}" />` +
+            `<div style="font-weight: bold; font-size: 15px; transform: rotate(-45deg); color:black; font-family: Montserrat; padding: 2px;">${e.deliveryOrder}</div>`
+        });
+        this.marker = L.marker(e.coordinates, {
+          icon: iconx
+        }).addTo(this.markerLayer);
+        // console.log(e.carNumber);
+      }) 
+      // this.loading = false
+      this.colour = []
     },
     getRandomColor() {
       var letters = "0123456789ABCDEF";
@@ -278,12 +413,25 @@ export default {
         this.orderArray = orders;
       });
     },
+    createClick(){
+      this.dialogCreateVisible = true
+    },
+    reqListClick(){
+      this.dialogTableVisible = true
+      this.haveList = false
+    },
+    infoClick(){
+      this.dialogInfoVisible = true
+    },
     clearData() {
       // this.markerLayer.clearLayers();
       this.orderAmount = null;
       this.carNum = null;
       this.selected = null;
       console.log("Click Clear Btn!");
+    },
+    clickMenu() {
+      this.isCollapse = this.isCollapse ? false : true;
     }
   }
 };
@@ -303,7 +451,39 @@ export default {
   border-radius: 10px;
   box-shadow: 0px 0px 14px 1px rgba(0, 0, 0, 0.1);
 }
+
+#createOrder {
+  text-align: left;
+}
+
+#uploadField {
+  width: 500px;
+}
+
+.item-color {
+  height: 25px;
+  width: 25px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+#orderMenu {
+  background: white;
+  margin-top: 10px;
+  padding: 10px;
+  position: absolute;
+  left: 10px;
+  top: 0px;
+  z-index: 1;
+  // width: 500px;
+  // height: 100px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 14px 1px rgba(0, 0, 0, 0.1);
+}
 #reqList {
+  border: 0.5px skyblue;
+  border-style: solid;
   margin-top: 10px;
   padding: 10px;
   position: absolute;
@@ -314,6 +494,18 @@ export default {
   height: 100px;
   border-radius: 10px;
   box-shadow: 0px 0px 14px 1px rgba(0, 0, 0, 0.1);
+}
+.el-dialog__header{
+  text-align: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.item {
+  font-size: 16px;
+  color:DodgerBlue;
+}
+
+#reqTable {
+  width: 2000px;
 }
 #map {
   height: 100vh;
@@ -327,7 +519,7 @@ export default {
 
 #orderAmount {
   .form-control {
-    width: 170px;
+    width: 350px;
   }
 }
 
@@ -337,7 +529,7 @@ export default {
 
 #carNumField {
   .form-control {
-    width: 160px;
+    width: 915px;
   }
 }
 
