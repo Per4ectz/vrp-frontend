@@ -176,7 +176,8 @@ export default {
       options: [
         { value: null, text: "Please select a solution" },
         { value: "kmean", text: "Kmean" },
-        { value: "qlearning", text: "Q-Learning" }
+        { value: "qlearning", text: "Q-Learning" },
+        { value: "kmean and qlearning", text: "Kmean and Q-Learning"}
       ],
       colour: [],
       colorZ: null,
@@ -202,7 +203,7 @@ export default {
   },
   computed: {
     isDisabled() {
-      return this.selected == "qlearning" || this.file != null;
+      return this.selected == "qlearning" || this.selected == "kmean and qlearning" || this.file != null;
     },
     isLoading() {
       return this.loading;
@@ -214,7 +215,7 @@ export default {
       console.log(val);
     },
     selected(val) {
-      if (val == "qlearning") this.carNum = null;
+      if (val == "qlearning" || val == "kmean and qlearning") this.carNum = null;
     },
     dialogCreateVisible(val) {
       if(!val) {
