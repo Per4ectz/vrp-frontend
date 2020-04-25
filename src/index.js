@@ -27,8 +27,8 @@ x.forEach((c) => {
     orders.push(s)    
 })
 var allOrder = {
-    solution: "kmean",
-    numberOfCars: "20",
+    // solution: "kmean",
+    // numberOfCars: "20",
     orders: orders
 }
 

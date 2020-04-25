@@ -1,48 +1,5 @@
 <template>
   <div>
-    <!-- <div id="orderGen">
-      <div id="solutionSelect" style="display: inline-block; margin-right: 20px">
-        <label style="display: block; text-align: left; font-weight: bold;">Solution</label>
-        <b-form-select v-model="selected" :options="options"></b-form-select>
-      </div>
-
-      <div id="orderAmount" style="display: inline-block; margin-right: 20px">
-        <label style="display: block; text-align: left; font-weight: bold;">Order Amount</label>
-        <b-form-input
-          v-model="orderAmount"
-          placeholder="Number of orders"
-          v-bind:disabled="this.file != null"
-        ></b-form-input>
-      </div>
-      <span style="margin-right: 20px">or</span>
-      <div id="uploadField" style="display: inline-block; margin-right: 20px">
-        <label style="display: block; text-align: left; font-weight: bold;">Upload Order</label>
-        <b-form-file
-          id="uploadBtn"
-          accept=".json"
-          v-model="file"
-          :state="Boolean(file)"
-          placeholder="Choose a file"
-          drop-placeholder="Drop file here..."
-          style="text-align: left;"
-          v-bind:disabled="orderAmount != ''"
-        ></b-form-file>
-      </div>
-
-      <div id="carNumField" style="display: inline-block; margin-right: 20px">
-        <label style="display: block; text-align: left; font-weight: bold;">Car Amount</label>
-        <b-form-input
-          class="car-num-field"
-          v-model="carNum"
-          placeholder="Number of cars"
-          v-bind:disabled="isDisabled"
-        ></b-form-input>
-      </div>
-
-      <b-button id="submitBtn" variant="primary" @click="putData()">Submit</b-button>
-      <b-button id="clearBtn" variant="secondary" @click="clearData()">Clear</b-button>
-    </div> -->
-
     <div id="orderMenu">
       <el-button id="menuBtn" @click="clickMenu()"><i class="el-icon-menu"></i></el-button>
       <el-menu class="el-menu-vertical-demo" :collapse="isCollapse" style="text-align: left !important">
@@ -63,8 +20,6 @@
       </el-menu>
     </div>
 
-    
-    
     <el-dialog id="createOrder" title="Create Order Request" :visible.sync="dialogCreateVisible">
       <div id="solutionSelect" style="display: block; margin-bottom: 20px">
         <label style="text-align: left; font-weight: bold;">Solution</label>
@@ -122,7 +77,10 @@
         <el-table-column property="carAmount" label="Car Amount" width="150"></el-table-column>
         <el-table-column property="reqStatus" label="Status"></el-table-column>
         <el-table-column property="operation" label="Operations">
-          <el-button v-bind:disabled="isPending" type="primary" size="mini" @click="plotOrder()">Plot Order</el-button>
+          <template slot-scope="scope">
+        <el-button @click.native.prevent="plotOrder(scope.$index)" v-bind:disabled="isPending" type="primary" size="mini" >Plot Order</el-button>
+      </template>
+          
         </el-table-column>
       </el-table>
     </el-dialog>
@@ -134,11 +92,11 @@
           <span>Total Volume</span>
         </div>
         <div v-if="volumeTotal">{{ volumeTotal.toFixed(2) }}</div>
-        <div v-else>No Data</div>
+        <div style="color: #909399" v-else>No Data</div>
       </el-card>
 
       <el-card shadow="always" style="margin-top: 20px">
-        <el-table :data="orderInfo" >
+        <el-table :data="infoData" >
         <el-table-column type="index" label="Car No." width="100"></el-table-column>
         <el-table-column label="Color" width="100">
           <span class="item-color"></span>
@@ -188,14 +146,16 @@ export default {
       dialogCreateVisible: false,
       dialogTableVisible: false,
       dialogInfoVisible: false,
-      orderData : null
+      orderData : []
       ,haveList : false
       ,requestArray : []
       ,isPending : true
       ,orderInfo : [],
       distanceArray : null,
       volumeArray: null,
-      volumeTotal: 0
+      volumeTotal: 0,
+      infoData: null,
+      totalTemp: 0
     };
   },
   mounted() {
@@ -203,7 +163,8 @@ export default {
   },
   computed: {
     isDisabled() {
-      return this.selected == "qlearning" || this.selected == "kmean and qlearning" || this.file != null;
+      return this.selected == "qlearning" || this.selected == "kmean and qlearning" 
+      // || this.file != null;
     },
     isLoading() {
       return this.loading;
@@ -220,9 +181,10 @@ export default {
     dialogCreateVisible(val) {
       if(!val) {
         setTimeout(() => {
-          this.orderAmount = null;
+          this.orderAmount = "";
           this.carNum = null;
           this.selected = null;
+
         }, 500);
         
       }
@@ -241,28 +203,42 @@ export default {
       );
       this.tileLayer.addTo(this.map);
     },
-    async readOrder() {
-      const fileValue = new FileReader();
-      fileValue.onload = e => {
-        // this.fileData =  e.target.result
-        // console.log('File read : ',e.target.result)
-      };
-      fileValue.readAsText(this.file);
-      this.fileData = fileValue;
+    readOrder() {
+      // const fileValue = new FileReader();
+      // fileValue.onload = e => {
+      //   this.fileData = e.target.result
+      //   // console.log('File read : ',this.fileData)
+      // };
+      // fileValue.readAsText(this.file);
+      // this.fileData = fileValue;
       // console.log('teste : ',this.fileData.result)
     },
     putData() {
-      this.orderData = null;
+      // this.orderData = null;
       this.isPending = true;
       this.loading = true;
-      this.orderInfo = []
-      this.volumeTotal = 0
-      this.genOrder();
+      // this.orderInfo = []
+      this.totalTemp = 0
+      if(this.fileData != null){
+        var fileArray = []
+        this.fileData.orders.forEach(o => {
+          var oo = {
+            coordinates: { lat: o[0], lon: o[1] },
+            width: Math.floor(Math.random() * 50 ) + 10,
+            length: Math.floor(Math.random() * 100 ) + 2,
+            height: Math.floor(Math.random() * 100 )+ 15
+          };
+          this.fileArray.push(oo);
+          this.orderArray = this.fileArray;
+        })
+        console.log('File Data :', this.orderArray)
+      }else this.genOrder();
       if (this.markerLayer == null) {
         this.markerLayer = L.layerGroup().addTo(this.map);
-      } else {
-        this.markerLayer.clearLayers();
-      }
+      } 
+      // else {
+      //   this.markerLayer.clearLayers();
+      // }
       var orders = {
         solution: this.selected,
         numberOfCars: this.carNum,
@@ -296,37 +272,61 @@ export default {
                   carAmount : res.data.request.numberOfCars,
                   reqStatus : status
                 }
-                this.requestArray = []
-                this.requestArray.push(resCheck)
+
+                // this.requestArray = []
+                // if(this.requestArray.length > 0) {
+                //   console.log('BOI')
+                //   this.pushToArray(this.requestArray, resCheck)
+                // } else {
+                //   console.log('First Push')
+                //   this.requestArray.push(resCheck)
+                // }
+                console.log(this.requestArray)
+                this.pushToArray(this.requestArray, resCheck)
+                console.log('RES', res)
                 this.haveList = true
 
-                
-
-                // console.log(res.data.request.volume)
-
-                // console.log("req State : ", reqState)
-                if (status === "finish" || status === "reject") {
-                  clearInterval(this.requestInterval);
-                  this.requestInterval = null;
-                  this.orderData = orders
-                  this.isPending = false
-                  console.log('Order Data : ',this.orderData)
-
-                  this.volumeArray = res.data.request.volume
-                  // this.distanceArray = res.data.request.distance
-                // console.log(res.data.distance)
-                
-
+                this.volumeArray = res.data.request.volume
+                var volAr = [];
                 for (let i = 0; i < this.volumeArray.length; i++) {
                   var info = {
                     distanceI : res.data.request.distance[i].toFixed(2),
                     volumeI : res.data.request.volume[i].toFixed(2)
                   } 
-                  this.volumeTotal += this.volumeArray[i]
-                  this.orderInfo.push(info)
+                  this.totalTemp += this.volumeArray[i]
+                  volAr.push(info)
                 }
+                this.orderInfo.push(volAr)
 
-                console.log('order Info',this.orderInfo)
+
+                console.log('OrderINFO : ',this.orderInfo)
+
+                
+
+                // console.log(res.data.request.volume)
+                // console.log("req State : ", reqState)
+                if (status === "finish" || status === "reject") {
+                  clearInterval(this.requestInterval);
+                  this.requestInterval = null;
+                  this.orderData.push(orders)
+                  this.isPending = false
+                  // console.log('Order Data : ',this.orderData)
+
+                  // this.volumeArray = res.data.request.volume
+                  // this.distanceArray = res.data.request.distance
+                // console.log(res.data.distance)
+                
+
+                // for (let i = 0; i < this.volumeArray.length; i++) {
+                //   var info = {
+                //     distanceI : res.data.request.distance[i].toFixed(2),
+                //     volumeI : res.data.request.volume[i].toFixed(2)
+                //   } 
+                //   this.volumeTotal += this.volumeArray[i]
+                //   this.orderInfo.push(info)
+                // }
+
+                // console.log('order Info',this.orderInfo)
                 }
               });
           }, 5000);
@@ -336,13 +336,14 @@ export default {
           console.log(error);
         });
     },
-    plotOrder() {
+    plotOrder(index) {
+      this.markerLayer.clearLayers();
       var carNumCheck = 0
       var findCarNum = false;
       if(this.selected == "kmean"){
         for (var c = 0; c < this.carNum; c++) this.getRandomColor();
       } else{
-        this.orderData.forEach(e => {
+        this.orderData[index].forEach(e => {
           if(carNumCheck <= e.carNumber) carNumCheck = e.carNumber;
         })
         carNumCheck = carNumCheck + 1
@@ -352,9 +353,10 @@ export default {
         for (var cc = 0; cc < carNumCheck; cc++) this.getRandomColor();
         findCarNum = false
       }
+      
+      console.log(this.orderData)
 
-
-      this.orderData.forEach(e => { 
+      this.orderData[index].forEach(e => { 
         // console.log(this.colour)
         const myCustomColour = this.colour[e.carNumber];
         const markerHtmlStyles = `
@@ -383,8 +385,30 @@ export default {
         }).addTo(this.markerLayer);
         // console.log(e.carNumber);
       }) 
-      // this.loading = false
       this.colour = []
+
+      this.infoData = this.orderInfo[index]
+      console.log('INFO DATA',this.infoData)
+      this.volumeTotal = this.totalTemp
+      
+
+      // for (let i = 0; i < this.volumeArray.length; i++) {
+      //   var info = {
+      //     distanceI : res.data.request.distance[i].toFixed(2),
+      //     volumeI : res.data.request.volume[i].toFixed(2)
+      //   } 
+      //   this.volumeTotal += this.volumeArray[i]
+      //   this.orderInfo.push(info)
+      // }
+    },
+    pushToArray(arr, obj) {
+      const index = arr.findIndex((e) => e.reqId == obj.reqId);
+      console.log(index)
+      if (index === -1) {
+          arr.push(obj);
+      } else {
+          arr[index] = obj;
+      }
     },
     getRandomColor() {
       var letters = "0123456789ABCDEF";
