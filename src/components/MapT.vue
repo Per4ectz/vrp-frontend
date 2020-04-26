@@ -78,14 +78,14 @@
         <el-table-column property="reqStatus" label="Status"></el-table-column>
         <el-table-column property="operation" label="Operations">
           <template slot-scope="scope">
-        <el-button @click.native.prevent="plotOrder(scope.$index)" v-bind:disabled="isPending" type="primary" size="mini" >Plot Order</el-button>
+        <el-button @click.native.prevent="plotOrder(scope.$index, requestArray)" v-bind:disabled="requestArray[scope.$index].reqStatus == 'pending'" type="primary" size="mini" >Plot Order</el-button>
       </template>
           
         </el-table-column>
       </el-table>
     </el-dialog>
 
-    <el-dialog id="infoDialog" title="Order Information" :visible.sync="dialogInfoVisible">
+    <el-dialog  id="infoDialog" title="Order Information" :visible.sync="dialogInfoVisible">
       
       <el-card shadow="always">
         <div slot="header" class="clearfix">
@@ -98,8 +98,11 @@
       <el-card shadow="always" style="margin-top: 20px">
         <el-table :data="infoData" >
         <el-table-column type="index" label="Car No." width="100"></el-table-column>
-        <el-table-column label="Color" width="100">
-          <span class="item-color"></span>
+        <el-table-column label="Color" width="100" >
+          <div v-for="color in colors"
+            :key="color"
+            :style="{ 'background-color': color}" class="item-color">
+          </div>
         </el-table-column>
         <el-table-column property="volumeI" label="Volume"></el-table-column>
         <el-table-column property="distanceI" label="Distance"></el-table-column>
@@ -109,7 +112,6 @@
     
     <div v-loading="loading" id="map" class="map"></div>
 
-    <!-- <b-button id="btn" variant="primary" @click="putData()">Put API</b-button> -->
   </div>
 </template>
 
@@ -138,7 +140,6 @@ export default {
         { value: "kmean and qlearning", text: "Kmean and Q-Learning"}
       ],
       colour: [],
-      colorZ: null,
       markerLayer: null,
       loading: false,
       requestID: null,
@@ -149,13 +150,14 @@ export default {
       orderData : []
       ,haveList : false
       ,requestArray : []
-      ,isPending : true
       ,orderInfo : [],
       distanceArray : null,
       volumeArray: null,
       volumeTotal: 0,
       infoData: null,
-      totalTemp: 0
+      totalTemp: 0,
+      colors: ['ddd'],
+      totalArray: []
     };
   },
   mounted() {
@@ -215,7 +217,6 @@ export default {
     },
     putData() {
       // this.orderData = null;
-      this.isPending = true;
       this.loading = true;
       // this.orderInfo = []
       this.totalTemp = 0
@@ -273,61 +274,36 @@ export default {
                   reqStatus : status
                 }
 
-                // this.requestArray = []
-                // if(this.requestArray.length > 0) {
-                //   console.log('BOI')
-                //   this.pushToArray(this.requestArray, resCheck)
-                // } else {
-                //   console.log('First Push')
-                //   this.requestArray.push(resCheck)
-                // }
                 console.log(this.requestArray)
                 this.pushToArray(this.requestArray, resCheck)
-                console.log('RES', res)
                 this.haveList = true
 
-                this.volumeArray = res.data.request.volume
-                var volAr = [];
-                for (let i = 0; i < this.volumeArray.length; i++) {
-                  var info = {
-                    distanceI : res.data.request.distance[i].toFixed(2),
-                    volumeI : res.data.request.volume[i].toFixed(2)
-                  } 
-                  this.totalTemp += this.volumeArray[i]
-                  volAr.push(info)
-                }
-                this.orderInfo.push(volAr)
+                // console.log('Order Data : ',orders)
 
-
-                console.log('OrderINFO : ',this.orderInfo)
-
-                
-
-                // console.log(res.data.request.volume)
-                // console.log("req State : ", reqState)
                 if (status === "finish" || status === "reject") {
                   clearInterval(this.requestInterval);
                   this.requestInterval = null;
                   this.orderData.push(orders)
-                  this.isPending = false
-                  // console.log('Order Data : ',this.orderData)
+                  // this.orderToArray(this.orderData, orders)
+                  console.log('FINISH',this.orderData)
 
-                  // this.volumeArray = res.data.request.volume
-                  // this.distanceArray = res.data.request.distance
-                // console.log(res.data.distance)
-                
-
-                // for (let i = 0; i < this.volumeArray.length; i++) {
-                //   var info = {
-                //     distanceI : res.data.request.distance[i].toFixed(2),
-                //     volumeI : res.data.request.volume[i].toFixed(2)
-                //   } 
-                //   this.volumeTotal += this.volumeArray[i]
-                //   this.orderInfo.push(info)
+                  this.volumeArray = res.data.request.volume
+                  var volAr = [];
+                  for (let i = 0; i < this.volumeArray.length; i++) {
+                    var info = {
+                      distanceI : res.data.request.distance[i].toFixed(2),
+                      volumeI : res.data.request.volume[i].toFixed(2)
+                    } 
+                    this.totalTemp += this.volumeArray[i]
+                    this.infoArrayUpdate(volAr, info)
+                    // this.volAr.push(info)
+                  }
+                this.orderInfo.push(volAr)
+                } 
+                // else {
+                //   this.orderToArray(this.orderData, orders)
+                //   console.log('Pending',this.orderData)
                 // }
-
-                // console.log('order Info',this.orderInfo)
-                }
               });
           }, 5000);
           this.dialogCreateVisible = false
@@ -336,7 +312,7 @@ export default {
           console.log(error);
         });
     },
-    plotOrder(index) {
+    plotOrder(index,stat) {
       this.markerLayer.clearLayers();
       var carNumCheck = 0
       var findCarNum = false;
@@ -354,10 +330,9 @@ export default {
         findCarNum = false
       }
       
-      console.log(this.orderData)
+      // console.log('Order DATA :',this.orderData)
 
       this.orderData[index].forEach(e => { 
-        // console.log(this.colour)
         const myCustomColour = this.colour[e.carNumber];
         const markerHtmlStyles = `
           background-color: ${myCustomColour};
@@ -386,10 +361,14 @@ export default {
         // console.log(e.carNumber);
       }) 
       this.colour = []
-
       this.infoData = this.orderInfo[index]
+      console.log('ORDER INFO',this.orderInfo)
       console.log('INFO DATA',this.infoData)
-      this.volumeTotal = this.totalTemp
+
+      if(this.totalArray[index] != this.totalTemp) this.totalArray.push(this.totalTemp)
+      console.log('TOTAL ARRAY',this.totalArray)
+      
+      this.volumeTotal = this.totalArray[index]
       
 
       // for (let i = 0; i < this.volumeArray.length; i++) {
@@ -403,11 +382,26 @@ export default {
     },
     pushToArray(arr, obj) {
       const index = arr.findIndex((e) => e.reqId == obj.reqId);
-      console.log(index)
       if (index === -1) {
           arr.push(obj);
       } else {
           arr[index] = obj;
+      }
+    },
+    orderToArray(arr,obj) {
+      const index = arr.findIndex((e) => e._id == obj._id);
+      if (index === -1) {
+          arr.push(obj);
+      } else {
+          arr[index] = obj;
+      }
+    },
+    infoArrayUpdate(arr,obj) {
+      const infoIndex = arr.findIndex((ia) => ia.distanceI == obj.distanceI);
+      if (infoIndex === -1) {
+          arr.push(obj);
+      } else {
+          arr[infoIndex] = obj;
       }
     },
     getRandomColor() {
