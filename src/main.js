@@ -15,6 +15,7 @@ Vue.config.productionTip = false
 Vue.use(ElementUI, { locale })
 Vue.use(BootstrapVue)
 Vue.use(L)
+Vue.component(FileReader.name, FileReader)
 // Vue.use(axios)
 
 Vue.use(VueGoogleMaps, {

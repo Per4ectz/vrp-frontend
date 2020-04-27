@@ -9,7 +9,6 @@
 // import GoogleMap from "./components/GoogleMap";
 import MapT from "./components/MapT";
 
-
 export default {
   name: 'app',
   components: {

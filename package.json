@@ -19,6 +19,7 @@
     "node-sass": "^4.12.0",
     "sass-loader": "^8.0.0",
     "vue": "^2.6.10",
+    "vue-filereader": "^0.1.1",
     "vue-material": "^1.0.0-beta-11",
     "vue2-google-maps": "^0.10.7",
     "vue2-leaflet": "^2.2.1"

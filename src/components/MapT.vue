@@ -174,8 +174,9 @@ export default {
   },
   watch: {
     file(val) {
-      this.readOrder();
+      this.readOrder(val)
       console.log(val);
+      this.genFileOrder()
     },
     selected(val) {
       if (val == "qlearning" || val == "kmean and qlearning") this.carNum = null;
@@ -205,18 +206,20 @@ export default {
       );
       this.tileLayer.addTo(this.map);
     },
-    readOrder() {
+    readOrder(newFile) {
       // const fileValue = new FileReader();
       // fileValue.onload = e => {
       //   this.fileData = e.target.result
-      //   // console.log('File read : ',this.fileData)
+      //   console.log('File read : ',this.fileData)
       // };
       // fileValue.readAsText(this.file);
       // this.fileData = fileValue;
       // console.log('teste : ',this.fileData.result)
+
     },
     putData() {
       // this.orderData = null;
+      this.file = null
       this.loading = true;
       // this.orderInfo = []
       this.totalTemp = 0
@@ -415,6 +418,28 @@ export default {
     genOrder() {
       var arr = [];
       for (let i = 0; i < this.orderAmount; i++) {
+        arr.push([]);
+        arr[i].push(
+          Math.random().toFixed(6) * (+13.9 - +13.6) + +13.6,
+          Math.random().toFixed(6) * (+100.5 - +100.1) + +100.1
+        );
+      }
+
+      var orders = [];
+      arr.forEach(c => {
+        var s = {
+          coordinates: { lat: c[0], lon: c[1] },
+          width: Math.floor(Math.random() * 50 ) + 10,
+          length: Math.floor(Math.random() * 100 ) + 2,
+          height: Math.floor(Math.random() * 100 )+ 15
+        };
+        orders.push(s);
+        this.orderArray = orders;
+      });
+    },
+    genFileOrder() {
+      var arr = [];
+      for (let i = 0; i < 300; i++) {
         arr.push([]);
         arr[i].push(
           Math.random().toFixed(6) * (+13.9 - +13.6) + +13.6,
