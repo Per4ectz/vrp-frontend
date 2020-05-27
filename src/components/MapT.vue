@@ -207,14 +207,14 @@ export default {
       this.tileLayer.addTo(this.map);
     },
     readOrder(newFile) {
-      // const fileValue = new FileReader();
-      // fileValue.onload = e => {
-      //   this.fileData = e.target.result
-      //   console.log('File read : ',this.fileData)
-      // };
-      // fileValue.readAsText(this.file);
-      // this.fileData = fileValue;
-      // console.log('teste : ',this.fileData.result)
+      const fileValue = new FileReader();
+      fileValue.onload = e => {
+        this.fileData = e.target.result
+        console.log('File read : ',this.fileData)
+      };
+      fileValue.readAsText(this.file);
+      this.fileData = fileValue;
+      console.log('teste : ',this.fileData.result)
 
     },
     putData() {
@@ -373,15 +373,6 @@ export default {
       
       this.volumeTotal = this.totalArray[index]
       
-
-      // for (let i = 0; i < this.volumeArray.length; i++) {
-      //   var info = {
-      //     distanceI : res.data.request.distance[i].toFixed(2),
-      //     volumeI : res.data.request.volume[i].toFixed(2)
-      //   } 
-      //   this.volumeTotal += this.volumeArray[i]
-      //   this.orderInfo.push(info)
-      // }
     },
     pushToArray(arr, obj) {
       const index = arr.findIndex((e) => e.reqId == obj.reqId);
