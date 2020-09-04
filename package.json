@@ -16,7 +16,7 @@
     "esri-leaflet": "^2.3.0",
     "express": "^4.17.1",
     "leaflet": "^1.5.1",
-    "node-sass": "^4.12.0",
+    "node-sass": "^4.13.1",
     "sass-loader": "^8.0.0",
     "vue": "^2.6.10",
     "vue-filereader": "^0.1.1",
